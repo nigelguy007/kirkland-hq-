@@ -413,7 +413,7 @@ body{
 var SB_URL='https://cmrejjpnfhqmabpwbptb.supabase.co'; // base URL only — /rest/v1/ added by code
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtcmVqanBuZmhxbWFicHdicHRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0ODE0MjUsImV4cCI6MjA5NDA1NzQyNX0.XOTP05hMzJBRfnpdbIC7ZVHTw0i-vXHeYXme8f5nJ1s';
 var API_KEY='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';
-var PROXY_URL='https://script.google.com/macros/s/AKfycbyF9bjb-t0rlaCa8JQqWzLEXulSdp3S9ApHgP_fJ3TXjUTSBn3LWa87xMul0Vh5kQ1V/exec';
+var PROXY_URL='https://script.google.com/macros/s/AKfycbxP0wyDLI-s2lxLesOjp7jRZj-zzNtTvAnhtaz16detxoRVWp4QI0Xo0NQPsIpct2PE/exec';
 
 // ═══════════════════════════════
 // CAMPAIGN CONTEXT
@@ -640,21 +640,14 @@ async function callAPI(a,userText,sysPrompt){
   }catch(e){history=[{role:'user',content:userText}];}
   var replyText='';
   try{
-    var resp=await fetch(PROXY_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        apiKey:API_KEY,
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1500,
-        system:sysPrompt,
-        messages:history.length?history:[{role:'user',content:userText}]
-      })
-    });
-    var data=await resp.json();
-    if(data.error){replyText='❌ '+( data.error.message||'API error — please try again.');}
-    else{var blk=(data.content||[]).filter(function(b){return b.type==='text';})[0];replyText=blk?blk.text:'No response — please try again.';}
-  }catch(e){replyText='❌ Connection error: '+e.message;}
+    var payload=JSON.stringify({apiKey:API_KEY,model:'claude-sonnet-4-20250514',max_tokens:1500,system:sysPrompt,messages:history.length?history:[{role:'user',content:userText}]});
+    var encoded=btoa(unescape(encodeURIComponent(payload)));
+    var resp=await fetch(PROXY_URL+'?d='+encodeURIComponent(encoded),{method:'GET',redirect:'follow'});
+    var text=await resp.text();
+    var data=JSON.parse(text);
+    if(data.error){replyText='❌ '+(data.error.message||'API error.');}
+    else{var blk=(data.content||[]).filter(function(b){return b.type==="text";})[0];replyText=blk?blk.text:'No response.';}
+  }catch(e){replyText='❌ Error: '+e.message;}
   await saveMsg(a.id,{role:'assistant',content:replyText,display:replyText,who:'🤖 '+a.name});
   var tEl=document.getElementById('typing-ind');if(tEl)tEl.remove();
   busy=false;document.getElementById('sbtn').disabled=false;
