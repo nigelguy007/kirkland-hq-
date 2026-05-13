@@ -694,11 +694,11 @@ function buildSidebar(){
 }
 
 function pickAgent(a){
-  // Always close studio and show main panel when agent is selected
+  // Always close studio and restore body when agent is selected
   var sp=document.getElementById('studio-panel');
-  var mp=document.getElementById('panel');
+  var bd=document.getElementById('body');
   if(sp) sp.style.display='none';
-  if(mp) mp.style.display='flex';
+  if(bd) bd.style.display='flex';
   var abc=document.getElementById('ab-create');
   if(abc){abc.style.borderColor='var(--gold-br)';abc.style.background='rgba(201,168,53,0.08)';}
   selAgent=a;lastId=0;
@@ -903,29 +903,18 @@ document.getElementById('inp').addEventListener('keydown',function(e){
 var sPlat='Instagram', sFmt='post', sTopic='', sScenes=[], sReelIdx=0, sReelTimer=null;
 
 function openStudio(){
-  document.getElementById('panel').style.display='none';
+  document.getElementById('body').style.display='none';
   document.getElementById('studio-panel').style.display='flex';
   document.querySelectorAll('.ab').forEach(function(x){x.classList.remove('on');});
-  var asc=document.getElementById('ab-create');if(asc){asc.style.borderColor='var(--gold)';
-  asc.style.background='rgba(201,168,53,0.15)';}
+  var asc=document.getElementById('ab-create');
+  if(asc){asc.style.borderColor='var(--gold)';asc.style.background='rgba(201,168,53,0.15)';}
 }
 
 function closeStudio(){
   document.getElementById('studio-panel').style.display='none';
-  document.getElementById('panel').style.display='flex';
+  document.getElementById('body').style.display='flex';
   var asc2=document.getElementById('ab-create');
   if(asc2){asc2.style.borderColor='var(--gold-br)';asc2.style.background='rgba(201,168,53,0.08)';}
-  // If no agent is selected, show the welcome state
-  if(!selAgent){
-    document.getElementById('pt').innerHTML='👋 Welcome to HQ';
-    document.getElementById('pd').textContent='Select an agent from the sidebar';
-    document.getElementById('qarea').style.display='none';
-    document.getElementById('infobar').style.display='none';
-    document.getElementById('inp').disabled=true;
-    document.getElementById('sbtn').disabled=true;
-    document.getElementById('inp').placeholder='Add your prompt here...';
-    document.getElementById('chatarea').innerHTML='<div class="estate"><div class="eico">✊</div><div class="etitle">Let\'s Rise Up. Together.</div><div class="esub">Select an agent to begin.</div></div>';
-  }
 }
 
 function sPick(btn, group){
