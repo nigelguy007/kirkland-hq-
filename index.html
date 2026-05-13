@@ -854,30 +854,9 @@ async function sGenerate(){
   var imgSize = isReel||isStory ? '1024x1792' : '1024x1024';
 
   if(isReel){
-    sys += ' Write a 4-scene reel script for '+sPlat+'. Respond EXACTLY in this format with no extra text:
-
-SCENE_1_TEXT: [on-screen text max 8 words]
-SCENE_1_CAPTION: [voiceover caption max 15 words]
-SCENE_1_IMAGE: [vivid image description for AI, no real faces, campaign imagery, navy blue red gold colours]
-
-SCENE_2_TEXT: [...]
-SCENE_2_CAPTION: [...]
-SCENE_2_IMAGE: [...]
-
-SCENE_3_TEXT: [...]
-SCENE_3_CAPTION: [...]
-SCENE_3_IMAGE: [...]
-
-SCENE_4_TEXT: [...]
-SCENE_4_CAPTION: [...]
-SCENE_4_IMAGE: [...]
-
-HASHTAGS: [10 hashtags]';
+    sys += ' Write a 4-scene reel script for '+sPlat+'. Use this EXACT format: SCENE_1_TEXT: [8 words max] | SCENE_1_CAPTION: [15 words max] | SCENE_1_IMAGE: [AI image description, no real faces, navy/red/gold] | SCENE_2_TEXT: [...] | SCENE_2_CAPTION: [...] | SCENE_2_IMAGE: [...] | SCENE_3_TEXT: [...] | SCENE_3_CAPTION: [...] | SCENE_3_IMAGE: [...] | SCENE_4_TEXT: [...] | SCENE_4_CAPTION: [...] | SCENE_4_IMAGE: [...] | HASHTAGS: [10 hashtags]';
   } else {
-    sys += ' Write a '+sPlat+' '+sFmt+' in '+sPlat+''s native style and character limits. Include:
-CAPTION: [the full caption]
-HASHTAGS: [10-15 hashtags]
-IMAGE_PROMPT: [detailed description for AI image generation — symbolic campaign imagery, community/America themes, no real faces, navy blue/red/gold colour scheme, high quality photorealistic]';
+    sys += ' Write a '+sPlat+' '+sFmt+' for '+sPlat+'. Include: CAPTION: [full caption] HASHTAGS: [10 hashtags] IMAGE_PROMPT: [AI image description, symbolic campaign imagery, no real faces, navy blue red gold colours, photorealistic]';
   }
 
   // ── Step 1: Get copy from Claude ──
@@ -941,7 +920,7 @@ async function sShowPost(copy, imgSize, status, preview, btn, isStory){
       var src = 'data:image/png;base64,'+id.data[0].b64_json;
       document.getElementById('s-img-wrap').innerHTML = '<img class="post-img" src="'+src+'" alt="Campaign post"/>';
       document.getElementById('s-dl-row').innerHTML =
-        '<button class="dlbtn dlbtn-img" onclick="sDownloadImg(''+src+'')">⬇️ Download Image</button>' +
+        '<button class="dlbtn dlbtn-img" onclick="sDownloadImg(window._sLastImg,\'walter-campaign.png\')">⬇️ Download Image</button>' +
         '<button class="dlbtn dlbtn-txt" onclick="sCopy()">📋 Copy Caption</button>' +
         '<button class="dlbtn dlbtn-txt" onclick="sDownloadTxt()">⬇️ Caption .txt</button>';
       window._sLastImg = src;
@@ -1011,7 +990,7 @@ function renderReelFrame(preview, scenes, hashtags){
   html+='</div>';
   // Controls
   html+='<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">';
-  html+='<button class="dlbtn" style="background:var(--red);color:#fff;padding:9px 18px;border-radius:8px;border:none;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="sReelPlay()">▶ Play</button>';
+  html+='<button class="dlbtn" style="background:var(--red);color:#fff;padding:9px 18px;border-radius:8px;border:none;font-weight:600;cursor:pointer" onclick="sReelPlay()">▶ Play</button>';
   html+='<button class="dlbtn dlbtn-txt" onclick="sReelDownloadAll()">⬇️ All Frames</button>';
   html+='<button class="dlbtn dlbtn-txt" onclick="sCopy()">📋 Hashtags</button>';
   html+='</div>';
