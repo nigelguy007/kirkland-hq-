@@ -412,7 +412,7 @@ body{
 // ═══════════════════════════════
 var SB_URL='https://cmrejjpnfhqmabpwbptb.supabase.co'; // base URL only — /rest/v1/ added by code
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtcmVqanBuZmhxbWFicHdicHRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0ODE0MjUsImV4cCI6MjA5NDA1NzQyNX0.XOTP05hMzJBRfnpdbIC7ZVHTw0i-vXHeYXme8f5nJ1s';
-var API_KEY='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';
+var API_KEY='stored-in-supabase-secrets';
 var PROXY_URL='https://cmrejjpnfhqmabpwbptb.supabase.co/functions/v1/rapid-handler';
 
 // ═══════════════════════════════
@@ -646,7 +646,7 @@ async function callAPI(a,userText,sysPrompt){
         'Content-Type':'application/json',
         'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtcmVqanBuZmhxbWFicHdicHRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0ODE0MjUsImV4cCI6MjA5NDA1NzQyNX0.XOTP05hMzJBRfnpdbIC7ZVHTw0i-vXHeYXme8f5nJ1s'
       },
-      body:JSON.stringify({apiKey:API_KEY,model:'claude-sonnet-4-20250514',max_tokens:1500,system:sysPrompt,messages:history.length?history:[{role:'user',content:userText}]})
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,system:sysPrompt,messages:history.length?history:[{role:'user',content:userText}]})
     });
     var data=await resp.json();
     if(data.error){replyText='❌ '+(data.error.message||'API error.');}
