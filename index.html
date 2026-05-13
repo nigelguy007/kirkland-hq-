@@ -105,6 +105,46 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--navy);color:var
 @keyframes lp{0%,100%{opacity:1}50%{opacity:0.3}}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--navy4);border-radius:4px}
 @media(max-width:600px){#sb{width:54px}.an,.abd{display:none}.qgrid{grid-template-columns:1fr}.card{padding:32px 24px}}
+
+/* ── CONTENT STUDIO ── */
+#studio{display:none;border-bottom:1px solid var(--navy4);background:var(--navy2);flex-shrink:0;max-height:60vh;overflow-y:auto}
+.studio-hdr{padding:10px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--navy4);cursor:pointer}
+.studio-title{font-size:11px;font-weight:600;color:#f9a8d4;letter-spacing:1px;text-transform:uppercase;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:7px}
+.studio-body{padding:16px 18px}
+.studio-tabs{display:flex;gap:6px;margin-bottom:14px}
+.stab{padding:6px 14px;border-radius:20px;border:1px solid var(--navy4);background:var(--navy3);color:var(--tx2);cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.stab.on{border-color:#f9a8d4;background:rgba(249,168,212,0.1);color:#f9a8d4;font-weight:600}
+.studio-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.studio-field{display:flex;flex-direction:column;gap:5px}
+.sfl{font-size:10px;color:var(--tx3);letter-spacing:1px;text-transform:uppercase;font-family:'DM Mono',monospace}
+.sfi{padding:9px 12px;background:var(--navy);border:1px solid var(--navy4);border-radius:8px;color:var(--tx);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s}
+.sfi:focus{border-color:#f9a8d4}select.sfi{cursor:pointer}
+.btn-studio{padding:11px 20px;background:linear-gradient(135deg,#be185d,#f9a8d4);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;display:flex;align-items:center;gap:8px}
+.btn-studio:hover{opacity:0.9;transform:translateY(-1px)}.btn-studio:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.studio-preview{display:none;margin-top:16px;gap:16px}
+.studio-preview.show{display:flex;flex-wrap:wrap}
+.post-card{border-radius:12px;overflow:hidden;border:1px solid var(--navy4);background:var(--navy3);flex:1;min-width:260px;max-width:380px}
+.post-img-wrap{position:relative;aspect-ratio:1;background:var(--navy4);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.post-img{width:100%;height:100%;object-fit:cover}
+.post-img-loading{display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--tx2);font-size:12px}
+.post-img-spinner{width:32px;height:32px;border:2px solid var(--navy4);border-top-color:#f9a8d4;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.post-copy{padding:12px 14px}
+.post-platform{font-size:9px;color:#f9a8d4;letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:6px}
+.post-text{font-size:12px;color:var(--tx);line-height:1.6;white-space:pre-wrap;max-height:120px;overflow-y:auto}
+.post-actions{display:flex;gap:7px;padding:10px 14px;border-top:1px solid var(--navy4)}
+.dl-btn{flex:1;padding:7px;border-radius:6px;border:1px solid var(--navy4);background:var(--navy);color:var(--tx2);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif;transition:all 0.15s;text-align:center}
+.dl-btn:hover{border-color:#f9a8d4;color:#f9a8d4}
+.reel-wrap{width:100%;max-width:300px;margin:0 auto}
+.reel-frame{position:relative;aspect-ratio:9/16;background:var(--navy);border-radius:12px;overflow:hidden;border:1px solid var(--navy4)}
+.reel-scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity 0.5s}
+.reel-scene.active{opacity:1}
+.reel-scene img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.reel-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.8));padding:20px 16px 16px;color:#fff;font-size:14px;line-height:1.5;z-index:2}
+.reel-controls{display:flex;gap:8px;margin-top:10px;justify-content:center}
+.reel-btn{padding:8px 16px;border-radius:20px;border:1px solid var(--navy4);background:var(--navy3);color:var(--tx);cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif}
+.reel-btn:hover{border-color:#f9a8d4;color:#f9a8d4}
+.studio-status{font-size:12px;color:var(--tx2);padding:8px 0;font-family:'DM Mono',monospace;min-height:24px}
 </style>
 </head>
 <body>
@@ -168,6 +208,64 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--navy);color:var
         <div class="qgrid" id="ctagrid"></div>
         <div class="livediv">🔍 Live Intel — searches internet for latest news</div>
         <div class="qgrid" id="livegrid"></div>
+      </div>
+
+      <!-- CONTENT STUDIO — shows for Content Engine agent -->
+      <div id="studio">
+        <div class="studio-hdr" onclick="toggleStudio()">
+          <div class="studio-title">
+            <span>🎬</span> Content Studio — Create Posts &amp; Reels with AI Images
+            <span style="font-size:10px;color:var(--tx3)">(ChatGPT DALL-E 3)</span>
+          </div>
+          <span id="studio-toggle" style="color:var(--tx3);font-size:12px">▼ Open</span>
+        </div>
+        <div id="studio-inner" style="display:none">
+          <div class="studio-body">
+            <div class="studio-tabs" id="studio-tabs">
+              <button class="stab on" data-tab="post" onclick="switchTab(this,'post')">📸 Post</button>
+              <button class="stab" data-tab="story" onclick="switchTab(this,'story')">📱 Story</button>
+              <button class="stab" data-tab="reel" onclick="switchTab(this,'reel')">🎬 Reel</button>
+              <button class="stab" data-tab="ad" onclick="switchTab(this,'ad')">📢 Ad</button>
+            </div>
+
+            <div class="studio-row">
+              <div class="studio-field">
+                <div class="sfl">Platform</div>
+                <select class="sfi" id="s-platform">
+                  <option value="Instagram">Instagram</option>
+                  <option value="Facebook">Facebook</option>
+                  <option value="TikTok">TikTok</option>
+                  <option value="LinkedIn">LinkedIn</option>
+                  <option value="Twitter/X">Twitter / X</option>
+                </select>
+              </div>
+              <div class="studio-field">
+                <div class="sfl">Tone</div>
+                <select class="sfi" id="s-tone">
+                  <option value="Inspiring and community-focused">Inspiring</option>
+                  <option value="Urgent and action-oriented">Urgent</option>
+                  <option value="Personal and authentic">Personal</option>
+                  <option value="Bold and confident">Bold</option>
+                  <option value="Empathetic and warm">Empathetic</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="studio-field" style="margin-bottom:12px">
+              <div class="sfl">Topic / Message</div>
+              <textarea class="sfi" id="s-topic" rows="2" placeholder="e.g. Olympic endorsements, early voting June 11, federal workers, Walter's story..."></textarea>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+              <button class="btn-studio" id="s-genbtn" onclick="generateContent()">
+                ✨ Generate Post + Image
+              </button>
+              <div class="studio-status" id="s-status"></div>
+            </div>
+
+            <div class="studio-preview" id="s-preview"></div>
+          </div>
+        </div>
       </div>
       <div id="chatarea">
         <div class="estate">
@@ -424,6 +522,9 @@ function pickAgent(a){
   document.getElementById('inp').disabled=false;
   document.getElementById('inp').placeholder='Ask '+a.name+' anything... (prefix with "search:" for live research)';
   document.getElementById('sbtn').disabled=false;
+  // Show Content Studio only for Content Engine
+  var studio = document.getElementById('studio');
+  if(studio){studio.style.display = a.id==='content' ? 'block' : 'none';}
 
   if(pollTimer){clearInterval(pollTimer);pollTimer=null;}
   loadMsgs(a.id,true);
@@ -585,6 +686,283 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 document.getElementById('inp').addEventListener('keydown',function(e){
   if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}
 });
+
+
+// ═══════════════════════════════════════
+// CONTENT STUDIO
+// ═══════════════════════════════════════
+var currentTab = 'post';
+var studioOpen = false;
+var reelScenes = [];
+var reelIdx = 0;
+var reelTimer = null;
+
+function toggleStudio(){
+  studioOpen = !studioOpen;
+  document.getElementById('studio-inner').style.display = studioOpen ? 'block' : 'none';
+  document.getElementById('studio-toggle').textContent = studioOpen ? '▲ Close' : '▼ Open';
+}
+
+function switchTab(btn, tab){
+  currentTab = tab;
+  document.querySelectorAll('.stab').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  var gbtn = document.getElementById('s-genbtn');
+  if(tab === 'reel') gbtn.innerHTML = '🎬 Generate Reel Script + Images';
+  else if(tab === 'ad') gbtn.innerHTML = '📢 Generate Ad + Image';
+  else if(tab === 'story') gbtn.innerHTML = '📱 Generate Story + Image';
+  else gbtn.innerHTML = '✨ Generate Post + Image';
+}
+
+async function generateContent(){
+  var topic = document.getElementById('s-topic').value.trim();
+  var platform = document.getElementById('s-platform').value;
+  var tone = document.getElementById('s-tone').value;
+  var status = document.getElementById('s-status');
+  var preview = document.getElementById('s-preview');
+  var gbtn = document.getElementById('s-genbtn');
+
+  if(!topic){status.textContent = '⚠️ Please enter a topic or message first.';return;}
+
+  gbtn.disabled = true;
+  preview.innerHTML = '';
+  preview.classList.remove('show');
+
+  var isReel = currentTab === 'reel';
+  var imgSize = isReel ? '1024x1792' : '1024x1024'; // 9:16 for reels, 1:1 for posts
+
+  // ── Step 1: Generate copy via Claude ──
+  status.textContent = '✍️ Claude is writing ' + (isReel ? 'reel script' : 'copy') + '...';
+
+  var systemPrompt = `You are a professional social media content creator for Walter Kirkland's congressional campaign MD-5 2026. Walter's slogan: "Let's Rise Up. Together." He is an authentic outsider, people-powered, no PAC money. Penn Relays champion, Founding President 100 Black Men of PG County, endorsed by Obama letter and Olympic Gold Medalists Tommie Smith and Edwin Moses.
+
+Platform: ${platform}. Tone: ${tone}. Content type: ${currentTab}.
+
+${isReel ? `Write a 4-scene reel script. For each scene respond with EXACTLY this format:
+SCENE 1:
+TEXT: [on-screen text, max 8 words]
+CAPTION: [voiceover or caption, max 15 words]
+IMAGE_PROMPT: [vivid description for DALL-E, no real people, campaign imagery style, Walter Kirkland Maryland campaign colours navy/red/gold]
+---
+SCENE 2: [same format]
+---
+SCENE 3: [same format]
+---
+SCENE 4: [same format]
+---
+HASHTAGS: [8 relevant hashtags]` : `Write compelling ${platform} ${currentTab} copy about the topic. Use Walter's authentic voice. Then on a new line write:
+CAPTION: [the full post caption]
+HASHTAGS: [10-15 relevant hashtags]
+IMAGE_PROMPT: [detailed DALL-E prompt for a campaign visual image — no real faces, use symbolic/community imagery, navy blue and red colour palette, Maryland/Congress theme, photorealistic style]`}`;
+
+  var userMsg = `Create a ${tone} ${platform} ${currentTab} about: ${topic}`;
+
+  try {
+    var r = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY},
+      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,system:systemPrompt,messages:[{role:'user',content:userMsg}]})
+    });
+    var txt = await r.text();
+    var data = JSON.parse(txt);
+    var copyText = '';
+    if(data._text) copyText = data._text;
+    else if(data.content) copyText = data.content.filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('\n');
+
+    if(!copyText){status.textContent='❌ Copy generation failed. Try again.';gbtn.disabled=false;return;}
+
+    if(isReel){
+      await buildReel(copyText, imgSize, status, preview, platform);
+    } else {
+      await buildPost(copyText, imgSize, status, preview, platform);
+    }
+
+  } catch(e){
+    status.textContent = '❌ Error: ' + e.message;
+    gbtn.disabled = false;
+  }
+}
+
+async function buildPost(copyText, imgSize, status, preview, platform){
+  var gbtn = document.getElementById('s-genbtn');
+
+  // Extract caption, hashtags, image prompt
+  var caption = '';
+  var hashtags = '';
+  var imagePrompt = '';
+
+  var capMatch = copyText.match(/CAPTION:\s*([\s\S]*?)(?=HASHTAGS:|IMAGE_PROMPT:|$)/i);
+  var tagMatch = copyText.match(/HASHTAGS:\s*([\s\S]*?)(?=IMAGE_PROMPT:|$)/i);
+  var imgMatch = copyText.match(/IMAGE_PROMPT:\s*([\s\S]*?)$/i);
+
+  caption = capMatch ? capMatch[1].trim() : copyText;
+  hashtags = tagMatch ? tagMatch[1].trim() : '';
+  imagePrompt = imgMatch ? imgMatch[1].trim() : 'Campaign poster for US congressional race Maryland 2026, navy blue and red colors, community gathering, American flag, inspirational and hopeful mood, photorealistic';
+
+  // Add campaign safety to prompt
+  var safePrompt = imagePrompt + ' — no recognizable faces, no specific people, campaign poster style, Maryland congressional race 2026 themes';
+
+  // ── Step 2: Generate image ──
+  status.textContent = '🎨 ChatGPT (DALL-E 3) is generating your image...';
+
+  var imgData = null;
+  try {
+    var imgR = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY},
+      body: JSON.stringify({action:'generateImage', prompt: safePrompt, size: imgSize})
+    });
+    var imgTxt = await imgR.text();
+    imgData = JSON.parse(imgTxt);
+  } catch(e){ imgData = {error:{message:e.message}}; }
+
+  var imgSrc = null;
+  if(imgData && imgData.data && imgData.data[0]){
+    imgSrc = 'data:image/png;base64,' + imgData.data[0].b64_json;
+  } else if(imgData && imgData.error){
+    status.textContent = '⚠️ Image failed: ' + imgData.error.message + ' (copy still downloadable)';
+  }
+
+  // ── Step 3: Build preview card ──
+  status.textContent = imgSrc ? '✅ Done! Download below.' : '✅ Copy ready (image unavailable)';
+
+  var fullCaption = caption + (hashtags ? '\n\n' + hashtags : '');
+
+  var card = document.createElement('div');
+  card.className = 'post-card';
+  card.innerHTML =
+    '<div class="post-img-wrap">' +
+      (imgSrc
+        ? '<img class="post-img" src="'+imgSrc+'" alt="Campaign post image"/>'
+        : '<div class="post-img-loading"><span style="font-size:24px">🖼️</span><span>Image unavailable</span><span style="font-size:10px;color:var(--tx3)">Add OPENAI_KEY to Supabase secrets</span></div>'
+      ) +
+    '</div>' +
+    '<div class="post-copy">' +
+      '<div class="post-platform">'+platform+' · '+currentTab+'</div>' +
+      '<div class="post-text">'+esc(fullCaption)+'</div>' +
+    '</div>' +
+    '<div class="post-actions">' +
+      (imgSrc ? '<button class="dl-btn" onclick="downloadImage(''+imgSrc+'','walter-campaign-'+currentTab+'.png')">⬇️ Image</button>' : '') +
+      '<button class="dl-btn" onclick="copyToClipboard(''+encodeURIComponent(fullCaption)+'')">📋 Copy Text</button>' +
+      '<button class="dl-btn" onclick="downloadText(''+encodeURIComponent(fullCaption)+'','caption.txt')">⬇️ Caption</button>' +
+    '</div>';
+
+  preview.appendChild(card);
+  preview.classList.add('show');
+  gbtn.disabled = false;
+}
+
+async function buildReel(scriptText, imgSize, status, preview, platform){
+  var gbtn = document.getElementById('s-genbtn');
+  // Parse scenes
+  var scenes = [];
+  var parts = scriptText.split(/---+/);
+  parts.forEach(function(part){
+    var textMatch = part.match(/TEXT:\s*(.+)/i);
+    var captionMatch = part.match(/CAPTION:\s*(.+)/i);
+    var promptMatch = part.match(/IMAGE_PROMPT:\s*([\s\S]+?)(?=SCENE|HASHTAGS|$)/i);
+    if(textMatch && captionMatch){
+      scenes.push({
+        text: textMatch[1].trim(),
+        caption: captionMatch[1].trim(),
+        prompt: promptMatch ? promptMatch[1].trim() : 'Campaign rally Maryland 2026, community energy, navy and red colors'
+      });
+    }
+  });
+
+  var tagMatch = scriptText.match(/HASHTAGS:\s*([\s\S]*?)$/i);
+  var hashtags = tagMatch ? tagMatch[1].trim() : '';
+
+  if(scenes.length === 0){status.textContent='❌ Could not parse reel script.';gbtn.disabled=false;return;}
+
+  status.textContent = '🎨 Generating ' + scenes.length + ' scene images with DALL-E 3...';
+
+  // Generate images for each scene
+  for(var i = 0; i < scenes.length; i++){
+    status.textContent = '🎨 Generating image ' + (i+1) + ' of ' + scenes.length + '...';
+    var safePrompt = scenes[i].prompt + ' — campaign imagery, no recognizable faces, Maryland 2026 congressional race, photorealistic, cinematic';
+    try {
+      var r = await fetch(PROXY_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY},
+        body:JSON.stringify({action:'generateImage',prompt:safePrompt,size:'1024x1792'})
+      });
+      var d = JSON.parse(await r.text());
+      if(d.data && d.data[0]) scenes[i].imgSrc = 'data:image/png;base64,' + d.data[0].b64_json;
+    } catch(e){ scenes[i].imgSrc = null; }
+  }
+
+  // Build reel preview
+  status.textContent = '✅ Reel ready! Press Play.';
+  reelScenes = scenes;
+  reelIdx = 0;
+
+  var reelHtml = '<div class="reel-wrap"><div class="reel-frame">';
+  scenes.forEach(function(sc,i){
+    reelHtml += '<div class="reel-scene'+(i===0?' active':'')+'" id="rscene-'+i+'">';
+    if(sc.imgSrc) reelHtml += '<img src="'+sc.imgSrc+'"/>';
+    else reelHtml += '<div style="position:absolute;inset:0;background:linear-gradient(135deg,var(--navy2),var(--navy4))"></div>';
+    reelHtml += '<div class="reel-overlay"><strong style="font-size:18px;display:block;margin-bottom:6px">'+esc(sc.text)+'</strong>'+esc(sc.caption)+'</div></div>';
+  });
+  reelHtml += '</div><div class="reel-controls">';
+  reelHtml += '<button class="reel-btn" onclick="reelPlay()">▶️ Play</button>';
+  reelHtml += '<button class="reel-btn" onclick="reelPrev()">◀</button>';
+  reelHtml += '<button class="reel-btn" onclick="reelNext()">▶</button>';
+  reelHtml += '<button class="reel-btn" onclick="downloadAllScenes()">⬇️ All Frames</button>';
+  reelHtml += '</div>';
+  if(hashtags) reelHtml += '<div style="margin-top:10px;font-size:11px;color:#93c5fd;line-height:1.8">'+esc(hashtags)+'</div>';
+  reelHtml += '</div>';
+
+  preview.innerHTML = reelHtml;
+  preview.classList.add('show');
+  gbtn.disabled = false;
+}
+
+function reelPlay(){
+  if(reelTimer) clearInterval(reelTimer);
+  reelIdx = 0;
+  showReelScene(reelIdx);
+  reelTimer = setInterval(function(){
+    reelIdx = (reelIdx+1) % reelScenes.length;
+    showReelScene(reelIdx);
+  }, 3000);
+}
+
+function showReelScene(idx){
+  document.querySelectorAll('.reel-scene').forEach(function(el){el.classList.remove('active');});
+  var el = document.getElementById('rscene-'+idx);
+  if(el) el.classList.add('active');
+}
+
+function reelPrev(){ if(reelTimer){clearInterval(reelTimer);reelTimer=null;} reelIdx = Math.max(0,reelIdx-1); showReelScene(reelIdx); }
+function reelNext(){ if(reelTimer){clearInterval(reelTimer);reelTimer=null;} reelIdx = Math.min(reelScenes.length-1,reelIdx+1); showReelScene(reelIdx); }
+
+function downloadAllScenes(){
+  reelScenes.forEach(function(sc,i){
+    if(sc.imgSrc) setTimeout(function(){downloadImage(sc.imgSrc,'reel-scene-'+(i+1)+'.png');}, i*500);
+  });
+}
+
+function downloadImage(src, filename){
+  var a = document.createElement('a'); a.href=src; a.download=filename; a.click();
+}
+
+function copyToClipboard(encoded){
+  var text = decodeURIComponent(encoded);
+  navigator.clipboard.writeText(text).then(function(){
+    var s=document.getElementById('s-status');if(s)s.textContent='✅ Copied to clipboard!';
+    setTimeout(function(){if(s)s.textContent='';},2000);
+  }).catch(function(){
+    var ta=document.createElement('textarea');ta.value=decodeURIComponent(encoded);
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+  });
+}
+
+function downloadText(encoded, filename){
+  var blob = new Blob([decodeURIComponent(encoded)], {type:'text/plain'});
+  var a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click();
+}
+
 </script>
 </body>
 </html>
