@@ -233,7 +233,17 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--navy);color:var
     </div>
   </div>
   <div id="body">
-    <div id="sb"><div class="sbl">Agents</div><div id="agentlist"></div></div>
+    <div id="sb" style="overflow-y:auto;display:flex;flex-direction:column"><div class="sbl">Agents</div><div id="agentlist"></div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--navy4);flex-shrink:0">
+        <button id="ab-create" onclick="openStudio()" style="display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;border:2px solid rgba(244,114,182,0.5);background:rgba(244,114,182,0.1);width:100%;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;margin-bottom:2px">
+          <div style="width:30px;height:30px;border-radius:7px;background:rgba(244,114,182,0.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🎨</div>
+          <div style="min-width:0;text-align:left">
+            <div style="font-size:12px;font-weight:700;color:#f9a8d4;line-height:1.2">Create Content</div>
+            <div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#f472b6;margin-top:1px">Posts · Reels</div>
+          </div>
+        </button>
+      </div>
+    </div>
     <div id="panel">
       <div id="ph"><div id="pt">👋 Welcome to HQ</div><div id="pd">Select an agent from the sidebar</div></div>
       <div id="infobar"></div>
@@ -807,15 +817,15 @@ function openStudio(){
   document.getElementById('panel').style.display='none';
   document.getElementById('studio-panel').style.display='flex';
   document.querySelectorAll('.ab').forEach(function(x){x.classList.remove('on');});
-  document.getElementById('ab-studio').style.borderColor='#f472b6';
-  document.getElementById('ab-studio').style.background='rgba(244,114,182,0.15)';
+  var asc=document.getElementById('ab-create');if(asc){asc.style.borderColor='#f472b6';
+  asc.style.background='rgba(244,114,182,0.2)';}
 }
 
 function closeStudio(){
   document.getElementById('studio-panel').style.display='none';
   document.getElementById('panel').style.display='flex';
-  document.getElementById('ab-studio').style.borderColor='rgba(244,114,182,0.4)';
-  document.getElementById('ab-studio').style.background='rgba(244,114,182,0.08)';
+  var asc2=document.getElementById('ab-create');if(asc2){asc2.style.borderColor='rgba(244,114,182,0.5)';
+  asc2.style.background='rgba(244,114,182,0.1)';}
 }
 
 function sPick(btn, group){
