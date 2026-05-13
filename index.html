@@ -153,6 +153,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--navy);color:var
       <span class="pill pill-ev" id="evpill">Early Voting: Jun 11–19</span>
       <span class="pill" id="prpill">Primary: Jun 23</span>
       <span class="pill pill-u" id="upill" onclick="doLogout()">👤 —</span>
+      <span class="pill" id="syncpill" onclick="syncDrive()" style="cursor:pointer;color:#93c5fd;border-color:rgba(37,99,235,0.35);background:rgba(37,99,235,0.08)" title="Sync latest files from Google Drive">🔄 Sync Drive</span>
     </div>
   </div>
   <div id="body">
@@ -191,6 +192,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--navy);color:var
 var SB_URL='https://cmrejjpnfhqmabpwbptb.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtcmVqanBuZmhxbWFicHdicHRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0ODE0MjUsImV4cCI6MjA5NDA1NzQyNX0.XOTP05hMzJBRfnpdbIC7ZVHTw0i-vXHeYXme8f5nJ1s';
 var PROXY_URL='https://cmrejjpnfhqmabpwbptb.supabase.co/functions/v1/rapid-handler';
+var APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbxP0wyDLI-s2lxLesOjp7jRZj-zzNtTvAnhtaz16detxoRVWp4QI0Xo0NQPsIpct2PE/exec';
+var DRIVE_CTX=''; // populated from Google Drive on startup
 
 // ═══ CAMPAIGN CONTEXT ═══
 var TODAY = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
@@ -200,6 +203,8 @@ var DAYS_TO_PRIMARY = Math.ceil((new Date('2026-06-23')-new Date())/86400000);
 var CTX=`[WALTER KIRKLAND FOR CONGRESS — MD-5 | LIVE CAMPAIGN DATA]
 TODAY: ${TODAY}. Days to early voting: ${DAYS_TO_EV}. Days to primary: ${DAYS_TO_PRIMARY}.
 Website: walterkirklandforcongress.com | Phone: 240.360.7753 | ActBlue: secure.actblue.com/donate/wkwebsite
+SOCIAL MEDIA: Facebook: facebook.com/KirklandForCongress | Instagram: @walterkirkland1 (instagram.com/walterkirkland1) | LinkedIn: linkedin.com/in/walter-r-kirkland-ba36b756 | YouTube: @WalterKirklandforCongress-MD5
+SOCIAL MEDIA GAPS (urgent): No TikTok account — competitors like Harry Dunn are very active there. No X/Twitter account — political press lives there. Recommend creating @KirklandMD5 on both immediately.
 
 CANDIDATE: Walter R. Kirkland. Slogan: "Let's Rise Up. Together."
 PRIMARY: June 23 2026 | EARLY VOTING: June 11-19 (June 19 = Juneteenth — exercise freedom. Every early vote is locked.)
@@ -295,6 +300,59 @@ function buildNameGrid(){
   });
 }
 
+// ═══ DRIVE SYNC ═══
+async function syncDrive(){
+  var pill = document.getElementById('syncpill');
+  if(pill){pill.textContent='🔄 Syncing...';pill.style.opacity='0.6';}
+  try {
+    var resp = await fetch(APPS_SCRIPT_URL + '?action=driveContent', {
+      method: 'GET',
+      redirect: 'follow'
+    });
+    var text = await resp.text();
+    var data = JSON.parse(text);
+    if(data.files && data.files.length > 0){
+      var ctx = data.files.map(function(f){
+        return '--- FILE: ' + f.name + ' ---\n' + f.content;
+      }).join('\n\n');
+      DRIVE_CTX = ctx;
+      // Save to Supabase so whole team gets it
+      await fetch(SB_URL+'/rest/v1/campaign_context',{
+        method:'POST',
+        headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},
+        body:JSON.stringify({id:'main',content:ctx,updated_at:new Date().toISOString()})
+      });
+      if(pill){pill.textContent='✅ Drive Synced ('+data.files.length+' files)';pill.style.opacity='1';pill.style.color='var(--green)';}
+      setTimeout(function(){if(pill)pill.textContent='🔄 Sync Drive';pill.style.color='#93c5fd';},3000);
+    } else {
+      if(pill){pill.textContent='📁 No files found';pill.style.opacity='1';}
+      setTimeout(function(){if(pill)pill.textContent='🔄 Sync Drive';},3000);
+    }
+  } catch(e){
+    // Try loading from Supabase cache instead
+    await loadDriveFromSupabase();
+    if(pill){pill.textContent='🔄 Sync Drive';pill.style.opacity='1';}
+  }
+}
+
+async function loadDriveFromSupabase(){
+  try {
+    var r = await fetch(SB_URL+'/rest/v1/campaign_context?id=eq.main',{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    });
+    var rows = await r.json();
+    if(Array.isArray(rows) && rows[0] && rows[0].content){
+      DRIVE_CTX = rows[0].content;
+      var pill = document.getElementById('syncpill');
+      if(pill){
+        var age = rows[0].updated_at ? ' ('+new Date(rows[0].updated_at).toLocaleDateString()+')' : '';
+        pill.textContent = '📁 Drive'+age;
+        pill.style.color = 'var(--green)';
+      }
+    }
+  } catch(e){ console.log('No Drive cache:', e); }
+}
+
 function doLogin(){
   var name=document.getElementById('username').value.trim();
   var err=document.getElementById('err-login');err.style.display='none';
@@ -304,6 +362,8 @@ function doLogin(){
   document.getElementById('sc-login').style.display='none';
   document.getElementById('app').style.display='flex';
   updateCountdown();
+  // Load Drive content from cache, then try live sync
+  loadDriveFromSupabase().then(function(){syncDrive();});
 }
 
 function doLogout(){
@@ -437,6 +497,8 @@ async function callAPI(a,userText,sysPrompt,isLive){
 
   var replyText='';
   try{
+    // Inject latest Drive content into system prompt
+    var fullSysPrompt = sysPrompt + (DRIVE_CTX ? '\n\nLATEST CAMPAIGN MATERIALS FROM DRIVE:\n' + DRIVE_CTX : '');
     var resp=await fetch(PROXY_URL,{
       method:'POST',
       headers:{
