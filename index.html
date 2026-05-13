@@ -229,6 +229,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--navy);color:var
       <span class="pill pill-ev" id="evpill">Early Voting: Jun 11–19</span>
       <span class="pill" id="prpill">Primary: Jun 23</span>
       <span class="pill pill-u" id="upill" onclick="doLogout()">👤 —</span>
+      <span class="pill" onclick="openSettings()" style="cursor:pointer;color:var(--tx2)" title="Platform Settings">⚙️ Settings</span>
       <span class="pill" id="syncpill" onclick="syncDrive()" style="cursor:pointer;color:#93c5fd;border-color:rgba(37,99,235,0.35);background:rgba(37,99,235,0.08)" title="Sync latest files from Google Drive">🔄 Sync Drive</span>
     </div>
   </div>
@@ -404,6 +405,87 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--navy);color:var
     </div>
 
   </div>
+  <!-- ═══ SETTINGS MODAL ═══ -->
+  <div id="settings-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;padding:20px">
+    <div style="background:var(--navy2);border:1px solid var(--navy4);border-radius:16px;padding:28px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;position:relative">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),#ff4060);border-radius:16px 16px 0 0"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div>
+          <div style="font-size:16px;font-weight:700;color:var(--white)">⚙️ Platform Settings</div>
+          <div style="font-size:12px;color:var(--tx2);margin-top:3px">Add credentials to enable auto-posting</div>
+        </div>
+        <button onclick="closeSettings()" style="padding:6px 12px;border-radius:8px;border:1px solid var(--navy4);background:var(--navy3);color:var(--tx2);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px">✕ Close</button>
+      </div>
+
+      <!-- FACEBOOK -->
+      <div style="background:var(--navy3);border:1px solid var(--navy4);border-radius:10px;padding:16px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <span style="font-size:18px">👥</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--white)">Facebook Page</div>
+            <div style="font-size:11px;color:var(--tx3)">Auto-post to Walter's Facebook Page</div>
+          </div>
+          <div id="fb-status" style="margin-left:auto;font-size:10px;padding:3px 8px;border-radius:10px;background:var(--navy4);color:var(--tx3)">Not set</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div>
+            <div style="font-size:10px;color:var(--tx3);margin-bottom:4px;font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase">Facebook Page ID</div>
+            <input type="text" id="fb-page-id" style="width:100%;padding:9px 12px;background:var(--navy);border:1px solid var(--navy4);border-radius:8px;color:var(--tx);font-size:13px;font-family:'DM Mono',monospace;outline:none" placeholder="e.g. 123456789012345"/>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--tx3);margin-bottom:4px;font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase">Page Access Token (long-lived)</div>
+            <input type="password" id="fb-token" style="width:100%;padding:9px 12px;background:var(--navy);border:1px solid var(--navy4);border-radius:8px;color:var(--tx);font-size:13px;font-family:'DM Mono',monospace;outline:none" placeholder="EAABwzLixnjYBO..."/>
+          </div>
+          <div style="font-size:11px;color:var(--tx3);line-height:1.6">Get token: <a href="https://developers.facebook.com/tools/explorer/" target="_blank" style="color:var(--gold)">Facebook Graph API Explorer</a> → select your page → generate token with pages_manage_posts permission</div>
+        </div>
+      </div>
+
+      <!-- INSTAGRAM -->
+      <div style="background:var(--navy3);border:1px solid var(--navy4);border-radius:10px;padding:16px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <span style="font-size:18px">📷</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--white)">Instagram Business</div>
+            <div style="font-size:11px;color:var(--tx3)">Uses same Facebook token + IG Account ID</div>
+          </div>
+          <div id="ig-status" style="margin-left:auto;font-size:10px;padding:3px 8px;border-radius:10px;background:var(--navy4);color:var(--tx3)">Not set</div>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--tx3);margin-bottom:4px;font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase">Instagram Business Account ID</div>
+          <input type="text" id="ig-account-id" style="width:100%;padding:9px 12px;background:var(--navy);border:1px solid var(--navy4);border-radius:8px;color:var(--tx);font-size:13px;font-family:'DM Mono',monospace;outline:none" placeholder="e.g. 17841400008460056"/>
+          <div style="font-size:11px;color:var(--tx3);margin-top:6px;line-height:1.6">Find in: Facebook Graph Explorer → GET /{page-id}?fields=instagram_business_account</div>
+        </div>
+      </div>
+
+      <!-- TWITTER/X -->
+      <div style="background:var(--navy3);border:1px solid var(--navy4);border-radius:10px;padding:16px;margin-bottom:12px;opacity:0.7">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:18px">𝕏</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--white)">Twitter / X</div>
+            <div style="font-size:11px;color:#f09090)">API write access requires $100/month paid plan — copy + best time shown instead</div>
+          </div>
+          <div style="margin-left:auto;font-size:10px;padding:3px 8px;border-radius:10px;background:rgba(224,68,68,0.15);color:#f09090">Paid API</div>
+        </div>
+      </div>
+
+      <!-- TIKTOK -->
+      <div style="background:var(--navy3);border:1px solid var(--navy4);border-radius:10px;padding:16px;margin-bottom:20px;opacity:0.7">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:18px">🎵</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--white)">TikTok</div>
+            <div style="font-size:11px;color:var(--tx3)">Video-only API — copy + best time shown instead</div>
+          </div>
+          <div style="margin-left:auto;font-size:10px;padding:3px 8px;border-radius:10px;background:var(--navy4);color:var(--tx3)">Manual only</div>
+        </div>
+      </div>
+
+      <button onclick="saveSettingsFn()" style="width:100%;padding:13px;background:linear-gradient(135deg,var(--red),var(--red2));border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">Save Settings</button>
+      <div id="settings-status" style="font-size:12px;color:var(--green);text-align:center;margin-top:10px;min-height:18px"></div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -929,10 +1011,12 @@ async function sShowPost(copy, imgSize, status, preview, btn, isStory){
     if(id.data && id.data[0] && id.data[0].b64_json){
       var src = 'data:image/png;base64,'+id.data[0].b64_json;
       document.getElementById('s-img-wrap').innerHTML = '<img class="post-img" src="'+src+'" alt="Campaign post"/>';
+      var bestT = getBestTime(sPlat);
       document.getElementById('s-dl-row').innerHTML =
-        '<button class="dlbtn dlbtn-img" onclick="sDownloadImg(window._sLastImg,\'walter-campaign.png\')">⬇️ Download Image</button>' +
+        '<button class="dlbtn dlbtn-img" onclick="sDownloadImg(window._sLastImg,\'walter-campaign.png\')">⬇️ Download</button>' +
         '<button class="dlbtn dlbtn-txt" onclick="sCopy()">📋 Copy Caption</button>' +
-        '<button class="dlbtn dlbtn-txt" onclick="sDownloadTxt()">⬇️ Caption .txt</button>';
+        '<button class="dlbtn" style="background:var(--green);color:#fff" onclick="sPostNow()">🚀 Post Now</button>' +
+        '<button class="dlbtn" style="background:var(--blue);color:#fff" onclick="sSchedule()">🕐 Schedule: ' + bestT.label + '</button>';
       window._sLastImg = src;
       status.textContent = '✅ Done! Download your post below.';
     } else {
@@ -1036,6 +1120,235 @@ function sDownloadTxt(){
   var txt=window._sLastCaption||'';
   var b=new Blob([txt],{type:'text/plain'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='caption.txt';a.click();
 }
+
+
+// ════════════════════════════════════
+// SETTINGS
+// ════════════════════════════════════
+var CREDS = {};
+
+function openSettings(){
+  loadSettingsFn();
+  document.getElementById('settings-modal').style.display='flex';
+}
+function closeSettings(){
+  document.getElementById('settings-modal').style.display='none';
+}
+
+async function loadSettingsFn(){
+  try {
+    var r = await fetch(SB_URL+'/rest/v1/platform_settings?id=eq.main',{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    });
+    var rows = await r.json();
+    if(Array.isArray(rows) && rows[0] && rows[0].credentials){
+      CREDS = JSON.parse(rows[0].credentials);
+      if(CREDS.fbPageId) document.getElementById('fb-page-id').value = CREDS.fbPageId;
+      if(CREDS.fbToken) document.getElementById('fb-token').value = CREDS.fbToken;
+      if(CREDS.igAccountId) document.getElementById('ig-account-id').value = CREDS.igAccountId;
+      updateCredBadges();
+    }
+  } catch(e){ console.log('No settings yet'); }
+}
+
+function updateCredBadges(){
+  var fbBadge = document.getElementById('fb-status');
+  var igBadge = document.getElementById('ig-status');
+  if(fbBadge) fbBadge.textContent = CREDS.fbPageId ? 'Connected' : 'Not set';
+  if(fbBadge) fbBadge.style.color = CREDS.fbPageId ? 'var(--green)' : 'var(--tx3)';
+  if(igBadge) igBadge.textContent = CREDS.igAccountId ? 'Connected' : 'Not set';
+  if(igBadge) igBadge.style.color = CREDS.igAccountId ? 'var(--green)' : 'var(--tx3)';
+}
+
+async function saveSettingsFn(){
+  CREDS.fbPageId = document.getElementById('fb-page-id').value.trim();
+  CREDS.fbToken = document.getElementById('fb-token').value.trim();
+  CREDS.igAccountId = document.getElementById('ig-account-id').value.trim();
+  var status = document.getElementById('settings-status');
+  try {
+    await fetch(SB_URL+'/rest/v1/platform_settings',{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify({id:'main',credentials:JSON.stringify(CREDS),updated_at:new Date().toISOString()})
+    });
+    status.textContent = '✅ Settings saved!';
+    updateCredBadges();
+    setTimeout(function(){status.textContent='';},2500);
+  } catch(e){
+    status.textContent = 'Error saving: '+e.message;
+  }
+}
+
+// ════════════════════════════════════
+// BEST TIME ENGINE (MD-5 campaign)
+// Audience: Federal workers, Black voters PGC, DC commuters, seniors
+// Timezone: EST (UTC-5)
+// ════════════════════════════════════
+function getBestTime(platform){
+  var now = new Date();
+  var est = new Date(now.toLocaleString('en-US',{timeZone:'America/New_York'}));
+  var day = est.getDay(); // 0=Sun,1=Mon...6=Sat
+  var hour = est.getHours();
+
+  // Best windows per platform for Walter's MD-5 audience
+  var windows = {
+    'Facebook':   [{days:[2,3,4],hours:[9,10,19,20],'why':'Federal workers & seniors check FB during work breaks and evenings'}],
+    'Instagram':  [{days:[1,2,3,4,5],hours:[7,8,12],'why':'Commuters & lunch scrollers — DC metro crowd'}],
+    'TikTok':     [{days:[1,2,3,4,5,6],hours:[19,20,21],'why':'Younger MD-5 voters in the evening'}],
+    'Twitter/X':  [{days:[1,2,3,4,5],hours:[7,8,9,17,18],'why':'Political Twitter is most active during morning commute'}],
+    'LinkedIn':   [{days:[2,3,4],hours:[10,11,12],'why':'Federal workers & professionals on lunch break'}]
+  };
+
+  var plat = windows[platform] || windows['Facebook'];
+  var target = plat[0];
+
+  // Find next occurrence of a best window
+  for(var dOffset = 0; dOffset < 8; dOffset++){
+    var checkDay = (day + dOffset) % 7;
+    if(target.days.indexOf(checkDay) === -1) continue;
+    var checkHours = target.hours;
+    for(var i = 0; i < checkHours.length; i++){
+      var h = checkHours[i];
+      if(dOffset === 0 && h <= hour) continue; // already past today
+      var target_date = new Date(est);
+      target_date.setDate(est.getDate() + dOffset);
+      target_date.setHours(h, 0, 0, 0);
+      var diff = Math.round((target_date - est) / 60000);
+      var label = '';
+      if(dOffset === 0) label = 'Today ' + formatHour(h);
+      else if(dOffset === 1) label = 'Tomorrow ' + formatHour(h);
+      else {
+        var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        label = days[checkDay] + ' ' + formatHour(h);
+      }
+      return {date: target_date, label: label, why: target.why, diffMins: diff};
+    }
+  }
+  // Fallback: 7pm today
+  var fb = new Date(est);
+  fb.setHours(19,0,0,0);
+  return {date: fb, label: 'Today 7:00 PM', why: 'Peak engagement time'};
+}
+
+function formatHour(h){
+  if(h === 0) return '12:00 AM';
+  if(h < 12) return h + ':00 AM';
+  if(h === 12) return '12:00 PM';
+  return (h-12) + ':00 PM';
+}
+
+// ════════════════════════════════════
+// POST NOW
+// ════════════════════════════════════
+async function sPostNow(){
+  var caption = window._sLastCaption || '';
+  var imgSrc = window._sLastImg || null;
+
+  if(!caption){ alert('No content to post yet. Generate first.'); return; }
+
+  var canFB = CREDS.fbPageId && CREDS.fbToken;
+  var canIG = CREDS.igAccountId && CREDS.fbToken;
+
+  if(!canFB && !canIG){
+    alert('Add your Facebook credentials in Settings (⚙️) to enable auto-posting.');
+    return;
+  }
+
+  var status = document.getElementById('s-status');
+  status.textContent = 'Posting...';
+
+  var imageUrl = null;
+  if(imgSrc){
+    // Upload image to Supabase Storage first to get a public URL
+    status.textContent = 'Uploading image...';
+    try {
+      var uploadR = await fetch(PROXY_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY},
+        body:JSON.stringify({action:'uploadImage',base64:imgSrc,sbKey:SB_KEY})
+      });
+      var uploadD = JSON.parse(await uploadR.text());
+      if(uploadD.url) imageUrl = uploadD.url;
+    } catch(e){ console.log('Image upload failed, posting text only'); }
+  }
+
+  // Post to enabled platforms
+  var posted = [];
+  var failed = [];
+
+  if(sPlat === 'Facebook' && canFB){
+    status.textContent = 'Posting to Facebook...';
+    try {
+      var r = await fetch(PROXY_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY},
+        body:JSON.stringify({action:'postFacebook',pageId:CREDS.fbPageId,pageToken:CREDS.fbToken,message:caption,imageUrl:imageUrl})
+      });
+      var d = JSON.parse(await r.text());
+      if(d.id) posted.push('Facebook');
+      else failed.push('Facebook: '+(d.error?d.error.message:'Unknown error'));
+    } catch(e){ failed.push('Facebook: '+e.message); }
+  }
+
+  if(sPlat === 'Instagram' && canIG && imageUrl){
+    status.textContent = 'Posting to Instagram...';
+    try {
+      var r2 = await fetch(PROXY_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY},
+        body:JSON.stringify({action:'postInstagram',igAccountId:CREDS.igAccountId,fbToken:CREDS.fbToken,caption:caption,imageUrl:imageUrl})
+      });
+      var d2 = JSON.parse(await r2.text());
+      if(d2.id) posted.push('Instagram');
+      else failed.push('Instagram: '+(d2.error?d2.error.message:'Unknown error'));
+    } catch(e){ failed.push('Instagram: '+e.message); }
+  }
+
+  if(posted.length > 0) status.textContent = '✅ Posted to: ' + posted.join(', ');
+  else if(failed.length > 0) status.textContent = '❌ Failed: ' + failed.join(' | ');
+  else status.textContent = 'ℹ️ Add credentials in Settings to auto-post to ' + sPlat;
+}
+
+// ════════════════════════════════════
+// SCHEDULE POST
+// ════════════════════════════════════
+async function sSchedule(){
+  var caption = window._sLastCaption || '';
+  var imgSrc = window._sLastImg || null;
+  if(!caption){ alert('Generate content first.'); return; }
+
+  var best = getBestTime(sPlat);
+  var status = document.getElementById('s-status');
+
+  try {
+    var r = await fetch(PROXY_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY},
+      body:JSON.stringify({
+        action:'saveScheduled',
+        sbKey:SB_KEY,
+        platform:sPlat,
+        caption:caption,
+        image_b64:imgSrc,
+        scheduled_at:best.date.toISOString(),
+        pageId:CREDS.fbPageId||''
+      })
+    });
+    var d = JSON.parse(await r.text());
+    if(Array.isArray(d) && d[0]){
+      status.textContent = '✅ Scheduled for ' + best.label + ' (' + best.why + ')';
+    } else {
+      status.textContent = '✅ Scheduled for ' + best.label + ' — open app at that time to auto-post';
+    }
+  } catch(e){
+    status.textContent = '✅ Best time: ' + best.label + ' — ' + best.why;
+  }
+}
+
+// Load settings on startup
+window.addEventListener('load', function(){
+  setTimeout(loadSettingsFn, 1000);
+});
 
 </script>
 </body>
