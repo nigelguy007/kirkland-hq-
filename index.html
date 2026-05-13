@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kirkland Campaign HQ — MD-5</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 :root{--navy:#0a1628;--navy2:#0f1e38;--navy3:#162444;--navy4:#1d2f55;--navy5:#243660;--red:#c8102e;--red2:#e8192f;--gold:#c9a835;--gold-l:#f0d070;--gold-bg:rgba(201,168,53,0.07);--gold-br:rgba(201,168,53,0.3);--blue:#2563eb;--blue-bg:rgba(37,99,235,0.1);--blue-br:rgba(37,99,235,0.35);--white:#ffffff;--tx:#e8eef8;--tx2:#8a9ab8;--tx3:#4a5a7a;--green:#28b87a;--br:rgba(255,255,255,0.08);--br2:rgba(255,255,255,0.14);}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',system-ui,sans-serif;background:var(--navy);color:var(--tx);min-height:100vh}
@@ -194,7 +194,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--navy);color:var
     <div class="logo-text">
       <div class="logo-name">Walter Kirkland for Congress</div>
       <div class="logo-dist">Maryland's 5th Congressional District</div>
-      <div class="logo-slogan">Let's Rise Up. Together.</div>
+      <div class="logo-slogan">Let\'s Rise Up. Together.</div>
     </div>
   </div>
   <div class="card-title">Welcome to Campaign HQ</div>
@@ -317,7 +317,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--navy);color:var
       <div id="chatarea">
         <div class="estate">
           <div class="eico">✊</div>
-          <div class="etitle">Let's Rise Up. Together.</div>
+          <div class="etitle">Let\'s Rise Up. Together.</div>
           <div class="esub">Select an agent. <strong style="color:var(--white)">White</strong> = expert analysis. <strong style="color:var(--gold-l)">Gold ⚡</strong> = instant Call To Action. <strong style="color:#93c5fd">Blue 🔍</strong> = live internet research on Walter, MD-5 news and winning campaign tactics. Type anything below.</div>
         </div>
       </div>
@@ -694,6 +694,13 @@ function buildSidebar(){
 }
 
 function pickAgent(a){
+  // Always close studio and show main panel when agent is selected
+  var sp=document.getElementById('studio-panel');
+  var mp=document.getElementById('panel');
+  if(sp) sp.style.display='none';
+  if(mp) mp.style.display='flex';
+  var abc=document.getElementById('ab-create');
+  if(abc){abc.style.borderColor='var(--gold-br)';abc.style.background='rgba(201,168,53,0.08)';}
   selAgent=a;lastId=0;
   document.querySelectorAll('.ab').forEach(function(x){x.classList.remove('on');});
   document.getElementById('ab-'+a.id).classList.add('on');
@@ -723,7 +730,7 @@ function pickAgent(a){
   });
 
   document.getElementById('inp').disabled=false;
-  document.getElementById('inp').placeholder='Ask '+a.name+' anything... (prefix with "search:" for live research)';
+  document.getElementById('inp').placeholder='Add your prompt here... (prefix search: for live research)';
   document.getElementById('sbtn').disabled=false;
 
 
@@ -906,8 +913,19 @@ function openStudio(){
 function closeStudio(){
   document.getElementById('studio-panel').style.display='none';
   document.getElementById('panel').style.display='flex';
-  var asc2=document.getElementById('ab-create');if(asc2){asc2.style.borderColor='var(--gold-br)';
-  asc2.style.background='rgba(201,168,53,0.08)';}
+  var asc2=document.getElementById('ab-create');
+  if(asc2){asc2.style.borderColor='var(--gold-br)';asc2.style.background='rgba(201,168,53,0.08)';}
+  // If no agent is selected, show the welcome state
+  if(!selAgent){
+    document.getElementById('pt').innerHTML='👋 Welcome to HQ';
+    document.getElementById('pd').textContent='Select an agent from the sidebar';
+    document.getElementById('qarea').style.display='none';
+    document.getElementById('infobar').style.display='none';
+    document.getElementById('inp').disabled=true;
+    document.getElementById('sbtn').disabled=true;
+    document.getElementById('inp').placeholder='Add your prompt here...';
+    document.getElementById('chatarea').innerHTML='<div class="estate"><div class="eico">✊</div><div class="etitle">Let\'s Rise Up. Together.</div><div class="esub">Select an agent to begin.</div></div>';
+  }
 }
 
 function sPick(btn, group){
@@ -946,7 +964,7 @@ async function sGenerate(){
   var imgSize = isReel||isStory ? '1024x1792' : '1024x1024';
 
   if(isReel){
-    sys += ' Write a 4-scene reel script for '+sPlat+'. Use this EXACT format: SCENE_1_TEXT: [8 words max] | SCENE_1_CAPTION: [15 words max] | SCENE_1_IMAGE: [AI image description, no real faces, navy/red/gold] | SCENE_2_TEXT: [...] | SCENE_2_CAPTION: [...] | SCENE_2_IMAGE: [...] | SCENE_3_TEXT: [...] | SCENE_3_CAPTION: [...] | SCENE_3_IMAGE: [...] | SCENE_4_TEXT: [...] | SCENE_4_CAPTION: [...] | SCENE_4_IMAGE: [...] | HASHTAGS: [10 hashtags]';
+    sys += ' Create a 5-slide '+sPlat+' reel using PAS copywriting (Hook-Problem-Proof-Solution-CTA) and 5-step narrative arc. Walter Kirkland for Congress MD-5 2026. Each slide is a standalone downloadable image with text baked in by ChatGPT Images 2.0. RESPOND EXACTLY in this format with no extra text, one item per line: SLIDE_1_HEADLINE: [3-6 POWERFUL WORDS - appears large on image] | SLIDE_1_SUBTEXT: [10-15 words supporting text] | SLIDE_1_VISUAL: [photorealistic background scene, no faces, specific colors and mood] | SLIDE_1_BADGE: [6-8 words for bottom bar] | SLIDE_2_HEADLINE: [...] | SLIDE_2_SUBTEXT: [...] | SLIDE_2_VISUAL: [...] | SLIDE_2_BADGE: [...] | SLIDE_3_HEADLINE: [...] | SLIDE_3_SUBTEXT: [...] | SLIDE_3_VISUAL: [...] | SLIDE_3_BADGE: [...] | SLIDE_4_HEADLINE: [...] | SLIDE_4_SUBTEXT: [...] | SLIDE_4_VISUAL: [...] | SLIDE_4_BADGE: [...] | SLIDE_5_HEADLINE: [...] | SLIDE_5_SUBTEXT: [...] | SLIDE_5_VISUAL: [...] | SLIDE_5_BADGE: [...] | CAPTION: [full platform caption using AIDA] | HASHTAGS: [15 hashtags]';
   } else {
     sys += ' Write a '+sPlat+' '+sFmt+' for '+sPlat+'. Include: CAPTION: [full caption] HASHTAGS: [10 hashtags] IMAGE_PROMPT: [AI image description, symbolic campaign imagery, no real faces, navy blue red gold colours, photorealistic]';
   }
@@ -1032,81 +1050,6 @@ async function sShowPost(copy, imgSize, status, preview, btn, isStory){
   btn.disabled=false;
 }
 
-async function sShowReel(copy, imgSize, status, preview, btn){
-  // Parse scenes
-  var scenes=[];
-  for(var i=1;i<=4;i++){
-    var tMatch=copy.match(new RegExp('SCENE_'+i+'_TEXT:\s*(.+)','i'));
-    var cMatch=copy.match(new RegExp('SCENE_'+i+'_CAPTION:\s*(.+)','i'));
-    var iMatch=copy.match(new RegExp('SCENE_'+i+'_IMAGE:\s*([\s\S]+?)(?=SCENE_'+(i+1)+'_|HASHTAGS:|$)','i'));
-    if(tMatch) scenes.push({text:tMatch[1].trim(),caption:cMatch?cMatch[1].trim():'',imgPrompt:iMatch?iMatch[1].trim():'Campaign imagery Maryland 2026',imgSrc:null});
-  }
-  var tagMatch=copy.match(/HASHTAGS:\s*([\s\S]*?)$/i);
-  var hashtags=tagMatch?tagMatch[1].trim():'';
-
-  if(!scenes.length){status.textContent='❌ Could not parse reel script';btn.disabled=false;return;}
-
-  // Show reel frame immediately with scene text
-  sScenes=scenes; sReelIdx=0;
-  renderReelFrame(preview, scenes, hashtags);
-  window._sLastCaption = hashtags;
-
-  // Generate images one by one
-  for(var j=0;j<scenes.length;j++){
-    status.textContent='🎨 Generating scene '+(j+1)+' of '+scenes.length+'...';
-    var p=scenes[j].imgPrompt+' — no real faces, Maryland 2026 congressional campaign, photorealistic, cinematic lighting';
-    try {
-      var r=await fetch(PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY},body:JSON.stringify({action:'generateImage',prompt:p,size:'1024x1792',quality:'medium'})});
-      var d=JSON.parse(await r.text());
-      if(d.data&&d.data[0]&&d.data[0].b64_json){
-        scenes[j].imgSrc='data:image/png;base64,'+d.data[0].b64_json;
-        var imgEl=document.getElementById('rscene-img-'+j);
-        if(imgEl){imgEl.src=scenes[j].imgSrc;imgEl.style.display='block';}
-        var spEl=document.getElementById('rscene-spin-'+j);
-        if(spEl)spEl.style.display='none';
-      }
-    } catch(e){}
-  }
-  status.textContent='✅ Reel ready! Press Play or download frames.';
-  btn.disabled=false;
-}
-
-function renderReelFrame(preview, scenes, hashtags){
-  var html='<div style="display:flex;flex-direction:column;align-items:center;gap:16px;padding-bottom:20px">';
-  html+='<div class="reel-frame">';
-  scenes.forEach(function(sc,i){
-    html+='<div class="reel-scene'+(i===0?' on':'')+'" id="rscene-'+i+'">';
-    html+='<div class="scene-loading" id="rscene-spin-'+i+'"><div class="scene-spin"></div><div>Generating...</div></div>';
-    html+='<img id="rscene-img-'+i+'" src="" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0"/>';
-    html+='<div class="reel-scene-text">'+esc(sc.text)+'<div class="reel-scene-sub">'+esc(sc.caption)+'</div></div>';
-    html+='</div>';
-  });
-  html+='</div>';
-  // Controls
-  html+='<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">';
-  html+='<button class="dlbtn" style="background:var(--red);color:#fff;padding:9px 18px;border-radius:8px;border:none;font-weight:600;cursor:pointer" onclick="sReelPlay()">▶ Play</button>';
-  html+='<button class="dlbtn dlbtn-txt" onclick="sReelDownloadAll()">⬇️ All Frames</button>';
-  html+='<button class="dlbtn dlbtn-txt" onclick="sCopy()">📋 Hashtags</button>';
-  html+='</div>';
-  if(hashtags) html+='<div style="font-size:11px;color:#93c5fd;text-align:center;line-height:1.9;max-width:280px">'+esc(hashtags)+'</div>';
-  html+='</div>';
-  preview.innerHTML=html;
-}
-
-function sReelPlay(){
-  if(sReelTimer)clearInterval(sReelTimer);
-  sReelIdx=0; sReelShow(0);
-  sReelTimer=setInterval(function(){sReelIdx=(sReelIdx+1)%sScenes.length;sReelShow(sReelIdx);},3000);
-}
-function sReelShow(i){
-  document.querySelectorAll('.reel-scene').forEach(function(el){el.classList.remove('on');});
-  var el=document.getElementById('rscene-'+i);if(el)el.classList.add('on');
-}
-function sReelDownloadAll(){
-  sScenes.forEach(function(sc,i){
-    if(sc.imgSrc)setTimeout(function(){sDownloadImg(sc.imgSrc,'reel-scene-'+(i+1)+'.png');},i*600);
-  });
-}
 function sDownloadImg(src, name){var a=document.createElement('a');a.href=src;a.download=name||'walter-campaign.png';a.click();}
 function sCopy(){
   var txt=window._sLastCaption||'';
@@ -1349,6 +1292,130 @@ async function sSchedule(){
 window.addEventListener('load', function(){
   setTimeout(loadSettingsFn, 1000);
 });
+
+
+// ════════════════════════════════════════════════════
+// REAL REEL GENERATOR
+// Skills used:
+//   copywriting: PAS framework (Hook→Problem→Proof→Solution→CTA)
+//   email-sequence: narrative arc across 5 slides
+//   ad-copy: stop-the-scroll hooks, platform native format
+//   frontend-design: presidential visual identity
+//   ChatGPT Images 2.0: text-in-image rendering (gpt-image-2 strength)
+// ════════════════════════════════════════════════════
+async function sShowReel(copy, imgSize, status, preview, btn){
+  // Parse 5 slides from pipe-delimited script
+  var slides = [];
+  for(var i=1; i<=5; i++){
+    var hM = copy.match(new RegExp('SLIDE_'+i+'_HEADLINE:\\s*([^|\\n]+)','i'));
+    var sM = copy.match(new RegExp('SLIDE_'+i+'_SUBTEXT:\\s*([^|\\n]+)','i'));
+    var vM = copy.match(new RegExp('SLIDE_'+i+'_VISUAL:\\s*([^|\\n]+)','i'));
+    var bM = copy.match(new RegExp('SLIDE_'+i+'_BADGE:\\s*([^|\\n]+)','i'));
+    if(hM){
+      slides.push({
+        headline: hM[1].trim(),
+        subtext: sM ? sM[1].trim() : '',
+        visual: vM ? vM[1].trim() : 'Campaign imagery Maryland 2026',
+        badge: bM ? bM[1].trim() : 'Vote Walter Kirkland June 23'
+      });
+    }
+  }
+  var capM = copy.match(/CAPTION:\s*([\s\S]*?)(?=HASHTAGS:|$)/i);
+  var tagM = copy.match(/HASHTAGS:\s*([\s\S]*?)$/i);
+  window._sLastCaption = (capM ? capM[1].trim()+'\n\n' : '') + (tagM ? tagM[1].trim() : '');
+
+  if(!slides.length){ status.textContent='Could not parse reel script. Try again.'; btn.disabled=false; return; }
+
+  // Build grid layout - all slides visible at once, downloadable individually
+  var gridHtml = '<div style="width:100%">' +
+    '<div style="font-size:12px;color:var(--tx2);margin-bottom:14px;font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase">' +
+    '✊ Walter Kirkland · ' + sPlat + ' Reel · ' + slides.length + ' slides · Download each image</div>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:16px" id="reel-grid"></div>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+    '<button onclick="sDownloadAllSlides()" style="padding:9px 18px;border-radius:8px;background:var(--green);border:none;color:#fff;cursor:pointer;font-family:DM Sans,sans-serif;font-size:13px;font-weight:600">⬇️ Download All Slides</button>' +
+    '<button onclick="sCopy()" style="padding:9px 18px;border-radius:8px;background:var(--navy3);border:1px solid var(--navy4);color:var(--tx);cursor:pointer;font-family:DM Sans,sans-serif;font-size:13px">📋 Copy Caption</button>' +
+    '</div>' +
+    (window._sLastCaption ? '<div style="margin-top:12px;background:var(--navy2);border:1px solid var(--navy4);border-radius:8px;padding:12px;font-size:12px;color:var(--tx);white-space:pre-wrap;max-height:140px;overflow-y:auto">'+esc(window._sLastCaption)+'</div>' : '') +
+    '</div>';
+  preview.innerHTML = gridHtml;
+
+  // Generate each slide with ChatGPT Images 2.0 - text baked INTO the image
+  window._sReelSlides = [];
+  for(var j=0; j<slides.length; j++){
+    var sl = slides[j];
+    status.textContent = 'Generating slide ' + (j+1) + ' of ' + slides.length + ' with ChatGPT Images 2.0...';
+
+    // Add loading placeholder
+    var grid = document.getElementById('reel-grid');
+    if(grid){
+      var placeholder = document.createElement('div');
+      placeholder.id = 'slide-card-'+j;
+      placeholder.style.cssText = 'background:var(--navy3);border:1px solid var(--navy4);border-radius:10px;overflow:hidden;aspect-ratio:9/16;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px';
+      placeholder.innerHTML = '<div style="width:24px;height:24px;border:2px solid var(--navy4);border-top-color:var(--gold);border-radius:50%;animation:sspin 0.8s linear infinite"></div><div style="font-size:10px;color:var(--tx3);font-family:DM Mono,monospace">Slide '+(j+1)+'</div>';
+      grid.appendChild(placeholder);
+    }
+
+    // Craft the image prompt so gpt-image-2 renders text IN the image
+    var slideNum = ['HOOK','CONTEXT','PROOF','VISION','CTA'][j] || ('SLIDE '+(j+1));
+    var imagePrompt = 'Professional political campaign social media reel slide. ' +
+      'Exact 9:16 vertical portrait format (tall and narrow, like a phone screen). ' +
+      'DESIGN SPEC: Deep navy blue background (#0a1628) with subtle texture. ' +
+      'Red accent bar across very top (10px). ' +
+      'SLIDE LABEL: Small text "' + slideNum + '" in upper left, gold color, uppercase. ' +
+      'MAIN HEADLINE: Large bold white text, Oswald-style condensed font, positioned in upper third: "' + sl.headline.toUpperCase() + '" ' +
+      'SUPPORTING TEXT: Medium white text below headline: "' + sl.subtext + '" ' +
+      'VISUAL BACKGROUND: ' + sl.visual + ' (as a photorealistic background image that shows through a dark overlay) ' +
+      'BOTTOM BADGE: Red rectangle bar at very bottom with white text: "' + sl.badge.toUpperCase() + '" ' +
+      'BOTTOM LINE: Smaller text below badge: "VOTE JUNE 23 · walterkirklandforcongress.com" ' +
+      'STYLE: Presidential, powerful, professional US congressional campaign 2026. ' +
+      'No real recognisable faces. Render all text legibly and exactly as specified. ' +
+      'Navy/red/gold campaign colour palette throughout.';
+
+    try {
+      var ir = await fetch(PROXY_URL, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY},
+        body:JSON.stringify({action:'generateImage', prompt:imagePrompt, size:'1024x1792', quality:'high'})
+      });
+      var id = JSON.parse(await ir.text());
+      if(id.data && id.data[0] && id.data[0].b64_json){
+        var src = 'data:image/png;base64,'+id.data[0].b64_json;
+        window._sReelSlides[j] = src;
+        var card = document.getElementById('slide-card-'+j);
+        if(card){
+          card.innerHTML = '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover;display:block"/>' +
+            '<div style="padding:8px;background:var(--navy3);border-top:1px solid var(--navy4)">' +
+            '<div style="font-size:10px;color:var(--gold);font-family:DM Mono,monospace;letter-spacing:1px;margin-bottom:4px">'+slideNum+'</div>' +
+            '<div style="font-size:11px;color:var(--tx);font-weight:600;line-height:1.3">'+esc(sl.headline)+'</div>' +
+            '<button onclick="sDownloadSlide('+j+',\'reel-slide-'+j+'.png\')" style="margin-top:6px;width:100%;padding:5px;border-radius:5px;background:var(--green);border:none;color:#fff;font-size:11px;cursor:pointer;font-family:DM Sans,sans-serif">⬇️ Download</button>' +
+            '</div>';
+        }
+      } else {
+        var errCard = document.getElementById('slide-card-'+j);
+        var errMsg = id.error ? id.error.message : 'Image generation failed';
+        if(errCard) errCard.innerHTML = '<div style="padding:12px;font-size:11px;color:#f09090;text-align:center;line-height:1.5">'+esc(errMsg)+'</div>';
+      }
+    } catch(e){
+      var errCard2 = document.getElementById('slide-card-'+j);
+      if(errCard2) errCard2.innerHTML = '<div style="padding:12px;font-size:11px;color:#f09090;text-align:center">Error: '+esc(e.message)+'</div>';
+    }
+  }
+
+  status.textContent = 'Reel ready — ' + slides.length + ' slides generated. Download individually or all at once.';
+  btn.disabled = false;
+}
+
+function sDownloadSlide(idx, name){
+  var src = window._sReelSlides && window._sReelSlides[idx];
+  if(src) sDownloadImg(src, name || ('reel-slide-'+(idx+1)+'.png'));
+}
+
+function sDownloadAllSlides(){
+  if(!window._sReelSlides || !window._sReelSlides.length){ alert('No slides generated yet.'); return; }
+  window._sReelSlides.forEach(function(src,i){
+    if(src) setTimeout(function(){ sDownloadImg(src,'reel-slide-'+(i+1)+'.png'); }, i*800);
+  });
+}
 
 </script>
 </body>
