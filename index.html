@@ -7,20 +7,6 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 
-/* ── WALTER'S OFFICIAL COLOUR PALETTE ──
-   Navy:   #0a1628  (deepest bg)
-   Navy2:  #0f1e38  (card bg)
-   Navy3:  #162444  (elevated surfaces)
-   Navy4:  #1d2f55  (borders/hover)
-   Red:    #c8102e  (primary accent — campaign red)
-   Red2:   #e8192f  (hover red)
-   Gold:   #c9a835  (secondary accent)
-   Gold-l: #f0d070
-   White:  #ffffff
-   Light:  #d0d8e8  (body text)
-   Muted:  #6a7a9a  (secondary text)
-   Dim:    #3a4a6a  (tertiary text)
-*/
 :root{
   --navy: #0a1628;
   --navy2: #0f1e38;
@@ -51,7 +37,6 @@ body{
   min-height:100vh;
 }
 
-/* ─── LOGIN SCREEN ─── */
 .screen{
   min-height:100vh;
   display:flex;align-items:center;justify-content:center;padding:24px;
@@ -59,7 +44,6 @@ body{
   position:relative;overflow:hidden;
 }
 
-/* Decorative background pattern */
 .screen::before{
   content:'';position:fixed;inset:0;
   background:
@@ -68,7 +52,6 @@ body{
   pointer-events:none;
 }
 
-/* Stars pattern */
 .screen::after{
   content:'';position:fixed;inset:0;
   background-image:
@@ -91,7 +74,6 @@ body{
   box-shadow:0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
 }
 
-/* Red top bar — matching website header accent */
 .card::before{
   content:'';position:absolute;top:0;left:0;right:0;height:3px;
   background:linear-gradient(90deg, var(--red), #ff4060, var(--red));
@@ -146,7 +128,6 @@ body{
 
 .erbox{background:rgba(224,68,68,0.1);border:1px solid rgba(224,68,46,0.3);border-radius:8px;padding:10px 14px;font-size:12px;color:#f09090;margin-bottom:14px;display:none;text-align:left}
 
-/* Campaign badge strip */
 .badge-strip{
   display:flex;gap:8px;justify-content:center;flex-wrap:wrap;
   margin-top:20px;padding-top:20px;
@@ -160,10 +141,8 @@ body{
 .cbadge.red{color:var(--red);border-color:rgba(200,16,46,0.3);background:rgba(200,16,46,0.06)}
 .cbadge.gold{color:var(--gold);border-color:var(--gold-br);background:var(--gold-bg)}
 
-/* ─── MAIN APP ─── */
 #app{display:none;height:100vh;flex-direction:column}
 
-/* Header */
 #hdr{
   background:var(--navy2);
   border-bottom:3px solid var(--red);
@@ -183,10 +162,8 @@ body{
 .pill-u{color:var(--gold);border-color:var(--gold-br);background:var(--gold-bg);cursor:pointer}
 .pill-u:hover{background:rgba(201,168,53,0.15)}
 
-/* Body */
 #body{display:flex;flex:1;overflow:hidden;background:var(--navy)}
 
-/* Sidebar */
 #sb{
   width:200px;flex-shrink:0;
   background:var(--navy2);
@@ -208,7 +185,6 @@ body{
 .an{font-size:12px;font-weight:500;color:var(--tx);line-height:1.2}
 .abd{font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
 
-/* Panel */
 #panel{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
 
 #ph{padding:12px 20px;border-bottom:1px solid var(--navy4);background:var(--navy2);flex-shrink:0}
@@ -237,7 +213,6 @@ body{
 }
 .ctadiv::before,.ctadiv::after{content:'';flex:1;height:1px;background:var(--gold-br)}
 
-/* Chat */
 #chatarea{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:13px;background:var(--navy)}
 .estate{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px 20px;text-align:center}
 .eico{font-size:36px}
@@ -279,7 +254,6 @@ body{
 .td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
 @keyframes bp{0%,80%,100%{transform:scale(0.5);opacity:0.3}40%{transform:scale(1);opacity:1}}
 
-/* Input */
 #iarea{padding:12px 20px;border-top:1px solid var(--navy4);background:var(--navy2);flex-shrink:0}
 #irow{display:flex;gap:9px}
 #inp{
@@ -315,7 +289,6 @@ body{
 </head>
 <body>
 
-<!-- ═══ LOGIN SCREEN ═══ -->
 <div class="screen" id="sc-login">
 <div class="card">
 
@@ -352,7 +325,6 @@ body{
 </div>
 </div>
 
-<!-- ═══ MAIN APP ═══ -->
 <div id="app">
   <div id="hdr">
     <div class="hlogo">
@@ -408,12 +380,11 @@ body{
 
 <script>
 // ═══════════════════════════════
-// CREDENTIALS — hardcoded
+// CREDENTIALS
 // ═══════════════════════════════
-var SB_URL='https://cmrejjpnfhqmabpwbptb.supabase.co'; // base URL only — /rest/v1/ added by code
+var SB_URL='https://cmrejjpnfhqmabpwbptb.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtcmVqanBuZmhxbWFicHdicHRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0ODE0MjUsImV4cCI6MjA5NDA1NzQyNX0.XOTP05hMzJBRfnpdbIC7ZVHTw0i-vXHeYXme8f5nJ1s';
-var API_KEY='stored-in-supabase-secrets';
-var PROXY_URL='https://cmrejjpnfhqmabpwbptb.supabase.co/functions/v1/rapid-handler';
+var PROXY_URL=SB_URL+'/functions/v1/rapid-handler';
 
 // ═══════════════════════════════
 // CAMPAIGN CONTEXT
@@ -432,27 +403,24 @@ Walter Kirkland is a lifelong servant leader, father, mentor, and advocate — 3
 
 MAJOR ENDORSEMENTS:
 1. Letter of support from President Barack Obama
-2. Olympic Gold Medalist Dr. Tommie Smith — 1968 Mexico City icon — "Walter is a leader who understands the value of service."
-3. Two-Time Olympic Gold Medalist Dr. Edwin Moses — "He will bring the same commitment to Congress that great athletes bring to competition."
+2. Olympic Gold Medalist Dr. Tommie Smith — 1968 Mexico City icon
+3. Two-Time Olympic Gold Medalist Dr. Edwin Moses
 4. Dr. George Fraser — internationally recognised entrepreneur, bestselling author
 5. Lionel Green — attorney, broadcaster, WBGR Network
 6. WHUR 96.3 FM — 2026 Hometown History Maker spotlight
 7. Appeared with former Maryland Governor Martin O'Malley (South County Democratic Club, March 2026)
 
 OFFICIAL ISSUES PLATFORM (18 areas):
-1. SAFER COMMUNITIES 2. BUILDING THE LOCAL ECONOMY 3. HEALTHCARE AND WELLNESS 4. SECURITY FOR SENIORS (protect Social Security, Medicare, property tax protections) 5. TRANSPORTATION 6. AFFORDABILITY 7. DEMOCRACY AND CIVIL RIGHTS 8. EDUCATION AND THE NEXT GENERATION 9. VETERANS AND MILITARY FAMILIES (Joint Base Andrews, NAS Patuxent River) 10. ENERGY AND ENVIRONMENT 11. FEDERAL EMPLOYEES — fight for 75,000+ federal workers in MD-5 12. FOREIGN POLICY 13. HOUSING — make homeownership possible again 14. IMMIGRATION 15. TECHNOLOGY AND INNOVATION (AI, cybersecurity, STEM) 16. MINORITY BUSINESS ENTERPRISES 17. LABOUR AND THE WORKFORCE 18. SMALL BUSINESSES AND ENTREPRENEURS
+1. SAFER COMMUNITIES 2. BUILDING THE LOCAL ECONOMY 3. HEALTHCARE AND WELLNESS 4. SECURITY FOR SENIORS 5. TRANSPORTATION 6. AFFORDABILITY 7. DEMOCRACY AND CIVIL RIGHTS 8. EDUCATION AND THE NEXT GENERATION 9. VETERANS AND MILITARY FAMILIES 10. ENERGY AND ENVIRONMENT 11. FEDERAL EMPLOYEES 12. FOREIGN POLICY 13. HOUSING 14. IMMIGRATION 15. TECHNOLOGY AND INNOVATION 16. MINORITY BUSINESS ENTERPRISES 17. LABOUR AND THE WORKFORCE 18. SMALL BUSINESSES AND ENTREPRENEURS
 
 DISTRICT: MD-5 — Prince George's, Charles, Calvert, St. Mary's, parts of Anne Arundel. ~783k residents, 40% Black/African American. 75,000+ federal workers, military families at NAS Patuxent River and Joint Base Andrews.
 
-TOP RIVALS (24 total Dem): Adrian Boafo (frontrunner, Hoyer endorsed), Harry Dunn (Jan 6 Capitol police), Rushern Baker III (ex-county exec), Wala Blegay (county council), Nicole Williams (state delegate), Arthur Ellis (state senator), Reuben Collins II (Charles County). District is Safe Democratic — primary IS the election.
+TOP RIVALS: Adrian Boafo (frontrunner, Hoyer endorsed), Harry Dunn, Rushern Baker III, Wala Blegay, Nicole Williams, Arthur Ellis, Reuben Collins II. District is Safe Democratic — primary IS the election.
 
-WALTER'S DIFFERENTIATORS: Only candidate who built a lasting institution in MD-5 before running (100 Black Men PG County) · Lifetime Achievement Award from Office of the President · Penn Relays champion + Hall of Famer · Obama letter + Two Olympic Gold Medalists endorsements — no other candidate has this · Lived experience of gun violence and mental health · NO PAC money · 75,000 federal workers in district · Mental health as a central platform issue`;
+WALTER'S DIFFERENTIATORS: Only candidate who built a lasting institution in MD-5 before running (100 Black Men PG County) · Lifetime Achievement Award · Penn Relays champion + Hall of Famer · Obama letter + Two Olympic Gold Medalists · Lived experience of gun violence and mental health · NO PAC money · 75,000 federal workers in district · Mental health as a central platform issue`;
 
 var CTA_RULES='\n\n---\nCRITICAL: After your full expert answer add this EXACT heading:\n## Call To Action\n\n8-12 numbered items. STRICT RULES:\n- Plain English a 12-year-old understands — zero jargon\n- ONE physical task per line\n- Start each with: THIS HOUR / TODAY / THIS WEEK / JUNE 9 / JUNE 11 / JUNE 19 / JUNE 23\n- Something a volunteer can DO immediately — max 20 words\n- Bold the action verb\nEnd with one bold sentence: "THE MOST IMPORTANT THING:" — single highest-leverage action right now.';
 
-// ═══════════════════════════════
-// TEAM — Diane and Nathaniel removed
-// ═══════════════════════════════
 var TEAM=['Nigel','Eva','Karen','Walter'];
 
 var AGENTS=[
@@ -597,7 +565,7 @@ function loadMsgs(agentId,full){
         var errMsg=e.message||String(e);
         var isFileProtocol=window.location.protocol==='file:';
         if(isFileProtocol){
-          box.innerHTML='<div class="estate"><div class="eico">⚠️</div><div class="etitle" style="color:var(--red)">File:// Protocol Detected</div><div class="esub" style="color:var(--tx)">Safari blocks network calls from local files.<br><br><strong style="color:var(--gold)">Fix: Upload to Netlify Drop</strong><br><br>1. Go to <strong>app.netlify.com/drop</strong><br>2. Drag this HTML file onto the page<br>3. Open the URL Netlify gives you<br>4. Share that URL with Eva and the team</div></div>';
+          box.innerHTML='<div class="estate"><div class="eico">⚠️</div><div class="etitle" style="color:var(--red)">File:// Protocol Detected</div><div class="esub" style="color:var(--tx)">Safari blocks network calls from local files. Upload to Netlify Drop or your live host.</div></div>';
         } else {
           box.innerHTML='<div class="estate"><div class="eico">⚠️</div><div class="etitle" style="color:var(--red)">Connection Error</div><div class="esub">'+errMsg+'</div></div>';
         }
@@ -626,32 +594,61 @@ function sendMsg(){
   saveMsg(selAgent.id,{role:'user',content:txt,display:txt,who:USER_NAME}).then(function(){callAPI(selAgent,txt,selAgent.sys+CTA_RULES);});
 }
 
+// ═══════════════════════════════
+// CALL EDGE FUNCTION (FIXED)
+// ═══════════════════════════════
 async function callAPI(a,userText,sysPrompt){
-  if(busy)return;busy=true;document.getElementById('sbtn').disabled=true;
+  if(busy)return;
+  busy=true;document.getElementById('sbtn').disabled=true;
   var box=document.getElementById('chatarea');
   var ti=document.createElement('div');ti.className='typing';ti.id='typing-ind';
   ti.innerHTML='<div class="td"></div><div class="td"></div><div class="td"></div>';
   box.appendChild(ti);box.scrollTop=box.scrollHeight;
+
   var history=[];
   try{
-    var r=await fetch(SB_URL+'/rest/v1/messages?agent_id=eq.'+encodeURIComponent(a.id)+'&order=ts.asc&limit=30',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    var r=await fetch(SB_URL+'/rest/v1/messages?agent_id=eq.'+encodeURIComponent(a.id)+'&order=ts.asc&limit=30',{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    });
     var rows=await r.json();
     if(Array.isArray(rows))rows.forEach(function(row){history.push({role:row.role,content:row.content});});
-  }catch(e){history=[{role:'user',content:userText}];}
+  }catch(e){
+    history=[{role:'user',content:userText}];
+  }
+
   var replyText='';
   try{
     var resp=await fetch(PROXY_URL,{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
-        'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtcmVqanBuZmhxbWFicHdicHRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0ODE0MjUsImV4cCI6MjA5NDA1NzQyNX0.XOTP05hMzJBRfnpdbIC7ZVHTw0i-vXHeYXme8f5nJ1s'
+        'apikey':SB_KEY,
+        'Authorization':'Bearer '+SB_KEY
       },
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,system:sysPrompt,messages:history.length?history:[{role:'user',content:userText}]})
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1500,
+        system:sysPrompt,
+        messages:history.length?history:[{role:'user',content:userText}]
+      })
     });
-    var data=await resp.json();
-    if(data.error){replyText='❌ '+(data.error.message||'API error.');}
-    else{var blk=(data.content||[]).filter(function(b){return b.type==="text";})[0];replyText=blk?blk.text:'No response.';}
-  }catch(e){replyText='❌ Error: '+e.message;}
+
+    var rawText=await resp.text();
+    var data;
+    try{ data=JSON.parse(rawText); }catch(_){ data={error:{message:'Non-JSON from edge function: '+rawText.slice(0,200)}}; }
+
+    if(!resp.ok){
+      replyText='❌ Edge function returned '+resp.status+': '+(data.error&&data.error.message?data.error.message:rawText.slice(0,200));
+    } else if(data.error){
+      replyText='❌ '+(data.error.message||'API error.');
+    } else {
+      var blk=(data.content||[]).filter(function(b){return b.type==='text';})[0];
+      replyText=blk?blk.text:'No response.';
+    }
+  }catch(e){
+    replyText='❌ Network error: '+e.message;
+  }
+
   await saveMsg(a.id,{role:'assistant',content:replyText,display:replyText,who:'🤖 '+a.name});
   var tEl=document.getElementById('typing-ind');if(tEl)tEl.remove();
   busy=false;document.getElementById('sbtn').disabled=false;
@@ -661,7 +658,7 @@ async function callAPI(a,userText,sysPrompt){
 function renderChat(msgs){
   var box=document.getElementById('chatarea');
   if(!msgs||!msgs.length){
-    box.innerHTML='<div class="estate"><div class="eico">'+(selAgent?selAgent.ico:'✊')+'</div><div class="etitle">'+( selAgent?selAgent.name+' — Ready':'Let\'s Rise Up. Together.')+'</div><div class="esub">'+(selAgent?selAgent.desc+'. Click a question above or type below.':'Select an agent from the left sidebar to get started.')+'</div></div>';
+    box.innerHTML='<div class="estate"><div class="eico">'+(selAgent?selAgent.ico:'✊')+'</div><div class="etitle">'+(selAgent?selAgent.name+' — Ready':'Let\'s Rise Up. Together.')+'</div><div class="esub">'+(selAgent?selAgent.desc+'. Click a question above or type below.':'Select an agent from the left sidebar to get started.')+'</div></div>';
     return;
   }
   box.innerHTML=msgs.map(buildMsgHTML).join('');box.scrollTop=box.scrollHeight;
