@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d1117">
+<title>Kanieva AI — Your Personal Travel Concierge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117; --bg2: #161b22; --bg3: #1c2230; --bg4: #222c3c;
+  --accent: #7c6af5; --accent2: #9d8fff; --accent-glow: rgba(124,106,245,0.25); --accent-soft: rgba(124,106,245,0.12);
+  --teal: #00c9a7; --teal-soft: rgba(0,201,167,0.12);
+  --gold: #f5c842; --gold-soft: rgba(245,200,66,0.12);
+  --red: #f0576a; --green: #3dd68c;
+  --tx: #e6edf3; --tx2: #8b949e; --tx3: #484f58;
+  --br: rgba(255,255,255,0.07); --br2: rgba(255,255,255,0.12);
+  --radius: 18px; --radius-sm: 12px; --shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx)}
+body{display:flex;flex-direction:column;position:relative}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity 0.6s,transform 0.6s}
+#splash.hide{opacity:0;transform:scale(1.04);pointer-events:none}
+.splash-orb{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--teal));display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 60px var(--accent-glow),0 0 120px rgba(0,201,167,0.15);animation:pulse-orb 2s ease-in-out infinite}
+@keyframes pulse-orb{0%,100%{box-shadow:0 0 60px var(--accent-glow),0 0 120px rgba(0,201,167,0.15)}50%{box-shadow:0 0 80px rgba(124,106,245,0.4),0 0 160px rgba(0,201,167,0.25)}}
+.splash-orb svg{width:48px;height:48px;fill:white}
+.splash-title{font-size:28px;font-weight:700;letter-spacing:-0.5px;background:linear-gradient(135deg,#fff 40%,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.splash-sub{font-size:14px;color:var(--tx2);margin-top:8px;letter-spacing:0.3px}
+.splash-dots{display:flex;gap:6px;margin-top:32px}
+.splash-dots span{width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:0.3;animation:dot-bounce 1.2s ease-in-out infinite}
+.splash-dots span:nth-child(2){animation-delay:0.2s}
+.splash-dots span:nth-child(3){animation-delay:0.4s}
+@keyframes dot-bounce{0%,100%{opacity:0.3;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+
+/* LAYOUT */
+#app{display:none;flex-direction:column;height:100%;height:100dvh}
+#app.show{display:flex}
+
+/* HEADER */
+#hdr{background:var(--bg2);border-bottom:1px solid var(--br);padding:12px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;position:relative;z-index:10}
+.hdr-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--teal));display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 16px var(--accent-glow)}
+.hdr-avatar svg{width:20px;height:20px;fill:white}
+.hdr-info{flex:1;min-width:0}
+.hdr-name{font-size:15px;font-weight:700;color:var(--tx);letter-spacing:-0.2px}
+.hdr-status{font-size:11px;color:var(--teal);display:flex;align-items:center;gap:4px;margin-top:1px}
+.hdr-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
+.hdr-actions{display:flex;gap:8px}
+.hdr-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--br2);background:var(--bg3);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx2);transition:all 0.15s}
+.hdr-btn:active{background:var(--bg4);color:var(--tx)}
+
+/* MESSAGES */
+#msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#msgs::-webkit-scrollbar{width:0}
+
+/* BUBBLES */
+.msg{display:flex;gap:10px;animation:msg-in 0.3s ease-out}
+@keyframes msg-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{flex-direction:row-reverse}
+.msg-avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;margin-top:2px}
+.msg-avatar.ai{background:linear-gradient(135deg,var(--accent),var(--teal));box-shadow:0 0 12px var(--accent-glow)}
+.msg-avatar.ai svg{width:16px;height:16px;fill:white}
+.msg-avatar.user{background:var(--bg4);border:1px solid var(--br2);color:var(--tx2)}
+.msg-body{max-width:82%;display:flex;flex-direction:column;gap:4px}
+.msg.user .msg-body{align-items:flex-end}
+.msg-bubble{padding:12px 15px;border-radius:18px;font-size:14px;line-height:1.6;word-wrap:break-word}
+.msg.ai .msg-bubble{background:var(--bg2);border:1px solid var(--br);border-bottom-left-radius:6px;color:var(--tx)}
+.msg.user .msg-bubble{background:linear-gradient(135deg,var(--accent),#6458e8);color:white;border-bottom-right-radius:6px}
+.msg-time{font-size:10px;color:var(--tx3);padding:0 4px;font-family:'DM Mono',monospace}
+
+/* CURSOR BLINK (streaming) */
+.cursor-blink{display:inline-block;animation:cblink 1s step-end infinite;color:var(--accent2);margin-left:1px}
+@keyframes cblink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* OPTION CHIPS */
+.option-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;max-width:320px}
+.opt-chip{padding:10px 12px;border-radius:12px;border:1px solid var(--br2);background:var(--bg3);color:var(--tx2);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;text-align:left;line-height:1.3;display:flex;align-items:center;gap:7px}
+.opt-chip:active,.opt-chip:hover{border-color:var(--accent);background:var(--accent-soft);color:var(--tx)}
+.opt-chip .chip-icon{font-size:16px;flex-shrink:0}
+
+/* FORM */
+.form-card{background:var(--bg2);border:1px solid var(--br2);border-radius:var(--radius);padding:16px;margin-top:4px;max-width:340px;width:100%}
+.form-card-title{font-size:13px;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.form-field{margin-bottom:12px}
+.form-label{font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:5px;display:block}
+.form-input{width:100%;padding:10px 12px;background:var(--bg3);border:1px solid var(--br2);border-radius:10px;color:var(--tx);font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s;-webkit-appearance:none}
+.form-input:focus{border-color:var(--accent)}
+.form-input::placeholder{color:var(--tx3)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.form-submit{width:100%;margin-top:4px;padding:12px;background:linear-gradient(135deg,var(--accent),#6458e8);border:none;border-radius:12px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;box-shadow:0 4px 16px var(--accent-glow)}
+.form-submit:active{transform:scale(0.98)}
+.form-submit:disabled{opacity:0.5;cursor:default}
+
+/* PACKAGES */
+.pkg-cards{display:flex;flex-direction:column;gap:10px;margin-top:4px;max-width:340px}
+.pkg-card{background:var(--bg2);border:1px solid var(--br2);border-radius:var(--radius);padding:16px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+.pkg-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--teal))}
+.pkg-card.gold-pkg::before{background:linear-gradient(90deg,var(--gold),#f59e42)}
+.pkg-card.teal-pkg::before{background:linear-gradient(90deg,var(--teal),#00e5c5)}
+.pkg-card:active{transform:scale(0.98);border-color:var(--accent)}
+.pkg-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;padding:3px 8px;border-radius:20px;background:var(--accent-soft);color:var(--accent2);margin-bottom:10px}
+.pkg-card.gold-pkg .pkg-badge{background:var(--gold-soft);color:var(--gold)}
+.pkg-card.teal-pkg .pkg-badge{background:var(--teal-soft);color:var(--teal)}
+.pkg-name{font-size:16px;font-weight:700;color:var(--tx);margin-bottom:4px}
+.pkg-desc{font-size:12px;color:var(--tx2);line-height:1.5;margin-bottom:12px}
+.pkg-features{list-style:none;margin-bottom:14px}
+.pkg-features li{font-size:12px;color:var(--tx2);padding:3px 0;display:flex;align-items:center;gap:6px}
+.pkg-features li::before{content:'✓';color:var(--teal);font-weight:700;flex-shrink:0}
+.pkg-footer{display:flex;align-items:center;justify-content:space-between}
+.pkg-price{font-size:20px;font-weight:700;color:var(--tx)}
+.pkg-price span{font-size:12px;color:var(--tx2);font-weight:400}
+.pkg-select-btn{padding:8px 16px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;background:var(--accent-soft);color:var(--accent2);transition:all 0.15s}
+.pkg-card.gold-pkg .pkg-select-btn{background:var(--gold-soft);color:var(--gold)}
+.pkg-card.teal-pkg .pkg-select-btn{background:var(--teal-soft);color:var(--teal)}
+
+/* PAYMENT */
+.pay-card{background:var(--bg2);border:1px solid var(--br2);border-radius:var(--radius);padding:20px;max-width:340px;width:100%}
+.pay-title{font-size:16px;font-weight:700;color:var(--tx);margin-bottom:4px}
+.pay-sub{font-size:12px;color:var(--tx2);margin-bottom:16px}
+.pay-amount{font-size:32px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:16px}
+.pay-breakdown{background:var(--bg3);border-radius:12px;padding:12px;margin-bottom:16px}
+.pay-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0}
+.pay-row:not(:last-child){border-bottom:1px solid var(--br)}
+.pay-row .label{color:var(--tx2)}
+.pay-row .val{color:var(--tx);font-weight:500}
+.pay-revolut-btn{width:100%;padding:14px;background:linear-gradient(135deg,#0075eb,#005ec4);border:none;border-radius:12px;color:white;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px}
+.pay-confirm-btn{width:100%;padding:12px;background:var(--teal-soft);border:1px solid rgba(0,201,167,0.3);border-radius:12px;color:var(--teal);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+
+/* CONFIRMATION */
+.confirm-card{background:var(--bg2);border:1px solid rgba(0,201,167,0.3);border-radius:var(--radius);padding:20px;max-width:340px;width:100%;text-align:center}
+.confirm-icon{width:56px;height:56px;border-radius:50%;background:var(--teal-soft);border:2px solid var(--teal);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:24px}
+.confirm-title{font-size:18px;font-weight:700;color:var(--tx);margin-bottom:6px}
+.confirm-sub{font-size:13px;color:var(--tx2);margin-bottom:16px;line-height:1.5}
+.confirm-ref{font-family:'DM Mono',monospace;font-size:12px;color:var(--teal);background:var(--teal-soft);padding:6px 14px;border-radius:20px;display:inline-block;margin-bottom:16px}
+.confirm-details{background:var(--bg3);border-radius:12px;padding:12px;text-align:left}
+.confirm-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0}
+.confirm-row:not(:last-child){border-bottom:1px solid var(--br)}
+.confirm-row .lbl{color:var(--tx2)}
+.confirm-row .val{color:var(--tx);font-weight:500;text-align:right;max-width:60%}
+
+/* TYPING */
+.typing{display:flex;gap:10px;animation:msg-in 0.3s ease-out}
+.typing-bubble{padding:12px 16px;background:var(--bg2);border:1px solid var(--br);border-radius:18px;border-bottom-left-radius:6px;display:flex;align-items:center;gap:4px}
+.typing-bubble span{width:6px;height:6px;border-radius:50%;background:var(--tx3);animation:typing-bounce 1.2s ease-in-out infinite}
+.typing-bubble span:nth-child(2){animation-delay:0.2s}
+.typing-bubble span:nth-child(3){animation-delay:0.4s}
+@keyframes typing-bounce{0%,100%{transform:translateY(0);opacity:0.4}50%{transform:translateY(-4px);opacity:1}}
+
+/* PROGRESS BAR */
+.prog-bar{background:var(--bg2);border:1px solid var(--br2);border-radius:var(--radius-sm);padding:12px 14px;max-width:340px;margin-top:4px}
+.prog-label{font-size:11px;color:var(--tx2);margin-bottom:6px;font-weight:500}
+.prog-track{height:4px;background:var(--bg4);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--teal));border-radius:99px;transition:width 0.4s ease}
+
+/* INPUT BAR */
+#input-bar{background:var(--bg2);border-top:1px solid var(--br);padding:10px 12px;padding-bottom:max(10px, env(safe-area-inset-bottom));flex-shrink:0}
+.input-wrap{display:flex;align-items:flex-end;gap:8px;background:var(--bg3);border:1px solid var(--br2);border-radius:24px;padding:8px 8px 8px 16px;transition:border-color 0.2s}
+.input-wrap:focus-within{border-color:var(--accent)}
+#user-input{flex:1;background:transparent;border:none;outline:none;color:var(--tx);font-size:15px;font-family:'Inter',sans-serif;resize:none;max-height:120px;line-height:1.5;padding:2px 0}
+#user-input::placeholder{color:var(--tx3)}
+#send-btn{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#6458e8);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.15s;box-shadow:0 4px 12px var(--accent-glow)}
+#send-btn:active{transform:scale(0.92)}
+#send-btn svg{width:18px;height:18px;fill:white;transform:translateX(1px)}
+#send-btn:disabled{opacity:0.4;cursor:default}
+
+/* QUICK REPLIES */
+.quick-replies{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;max-width:340px}
+.qr{padding:7px 13px;border-radius:20px;border:1px solid var(--br2);background:var(--bg3);color:var(--tx2);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all 0.15s;flex-shrink:0}
+.qr:active,.qr:hover{border-color:var(--accent);background:var(--accent-soft);color:var(--accent2)}
+
+/* UTILITY */
+.text-accent{color:var(--accent2)}
+.text-teal{color:var(--teal)}
+.text-gold{color:var(--gold)}
+strong{font-weight:600;color:var(--tx)}
+
+/* API KEY MODAL */
+#api-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:998;padding:24px}
+#api-modal.hidden{display:none}
+.api-card{background:var(--bg2);border:1px solid var(--br2);border-radius:var(--radius);padding:28px 24px;max-width:340px;width:100%;box-shadow:var(--shadow)}
+.api-icon{font-size:32px;margin-bottom:12px}
+.api-title{font-size:18px;font-weight:700;color:var(--tx);margin-bottom:6px}
+.api-sub{font-size:13px;color:var(--tx2);margin-bottom:20px;line-height:1.5}
+.api-input{width:100%;padding:11px 14px;background:var(--bg3);border:1px solid var(--br2);border-radius:12px;color:var(--tx);font-size:13px;font-family:'DM Mono',monospace;outline:none;margin-bottom:8px;-webkit-appearance:none;transition:border-color 0.2s}
+.api-input:focus{border-color:var(--accent)}
+.api-input::placeholder{color:var(--tx3)}
+.api-error{font-size:12px;color:var(--red);margin-bottom:10px;min-height:16px}
+.api-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),#6458e8);border:none;border-radius:12px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:12px;box-shadow:0 4px 16px var(--accent-glow)}
+.api-btn:active{transform:scale(0.98)}
+.api-link{display:block;text-align:center;font-size:12px;color:var(--tx2);text-decoration:none}
+.api-link:hover{color:var(--accent2)}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-orb">
+    <svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+  </div>
+  <div class="splash-title">Kanieva AI</div>
+  <div class="splash-sub">Your Personal Travel Concierge</div>
+  <div class="splash-dots"><span></span><span></span><span></span></div>
+</div>
+
+<!-- API KEY MODAL -->
+<div id="api-modal" class="hidden">
+  <div class="api-card">
+    <div class="api-icon">🔑</div>
+    <div class="api-title">Connect Your API Key</div>
+    <div class="api-sub">Enter your Anthropic API key to power Kanieva AI with real intelligence. Stored locally on your device only — never sent elsewhere.</div>
+    <input type="password" class="api-input" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off" autocorrect="off" spellcheck="false">
+    <div class="api-error" id="api-key-error"></div>
+    <button class="api-btn" onclick="saveApiKey()">Connect &amp; Start ✨</button>
+    <a class="api-link" href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer">Get a free API key at console.anthropic.com →</a>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div id="hdr">
+    <div class="hdr-avatar">
+      <svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+    </div>
+    <div class="hdr-info">
+      <div class="hdr-name">Kanieva AI</div>
+      <div class="hdr-status">Online · Travel Concierge</div>
+    </div>
+    <div class="hdr-actions">
+      <div class="hdr-btn" onclick="showApiKeyModal()" title="API Key">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><line x1="11" y1="12" x2="22" y2="1"/><line x1="19" y1="3" x2="22" y2="6"/><line x1="16" y1="6" x2="19" y2="9"/></svg>
+      </div>
+      <div class="hdr-btn" onclick="resetChat()" title="New Chat">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div id="msgs"></div>
+
+  <div id="input-bar">
+    <div class="input-wrap">
+      <textarea id="user-input" placeholder="Message Kanieva AI…" rows="1"></textarea>
+      <button id="send-btn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
+const API_URL = 'https://api.anthropic.com/v1/messages';
+const MODEL = 'claude-sonnet-4-6';
+
+const SYSTEM_PROMPT = `You are Kanieva AI, a warm, expert personal travel concierge. Help users plan and book unforgettable trips.
+
+RULES:
+1. ONLY answer travel-related questions (destinations, flights, hotels, itineraries, packing, language, budget, visas, culture, experiences). If asked about anything unrelated to travel, politely decline and redirect to travel assistance.
+2. Keep responses SHORT and mobile-friendly — 2-3 paragraphs max, or a concise list. Use **bold** for key info.
+3. Be enthusiastic, professional, and personalised. Reference the user's specific destination and preferences when known.
+4. When the user has provided complete trip details (origin, destination, dates, travelers), use the generate_travel_packages tool to create tailored packages.
+
+FORMATTING: Use **bold** for key terms. Separate ideas with line breaks. No markdown headers or tables.`;
+
+const PACKAGE_TOOL = {
+  name: 'generate_travel_packages',
+  description: 'Generate exactly 3 personalised travel packages (Essential, Premium, Luxury) based on the user\'s specific trip details. Call this when you have complete trip information including destination, dates, and traveler count.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      intro: { type: 'string', description: 'Brief enthusiastic intro (1-2 sentences) presenting the packages.' },
+      packages: {
+        type: 'array', minItems: 3, maxItems: 3,
+        items: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', enum: ['essential', 'premium', 'luxury'] },
+            styleClass: { type: 'string', enum: ['', 'gold-pkg', 'teal-pkg'], description: 'empty=essential, gold-pkg=premium, teal-pkg=luxury' },
+            badge: { type: 'string', description: 'Badge text e.g. "⚡ Essential", "⭐ Most Popular", "💎 Luxury"' },
+            name: { type: 'string', description: 'Package name tailored to destination' },
+            description: { type: 'string', description: 'One sentence tailored to the user\'s destination and preferences' },
+            features: { type: 'array', items: { type: 'string' }, minItems: 5, maxItems: 5, description: '5 specific inclusions tailored to this trip' },
+            price: { type: 'string', description: 'Price per person e.g. "$1,299"' },
+            per: { type: 'string', description: '"/person"' }
+          },
+          required: ['id', 'styleClass', 'badge', 'name', 'description', 'features', 'price', 'per']
+        }
+      }
+    },
+    required: ['intro', 'packages']
+  }
+};
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+const STATE = {
+  stage: 'welcome',
+  formData: {},
+  selectedPackage: null,
+  bookingRef: null,
+  apiKey: localStorage.getItem('kanieva_api_key') || '',
+  messages: [],
+  isStreaming: false,
+  streamAccum: '',
+  streamBubbleId: null
+};
+
+const FORM_FIELDS = [
+  { key: 'name',       label: 'Full Name',             placeholder: 'e.g. Jane Smith',               type: 'text' },
+  { key: 'email',      label: 'Email Address',          placeholder: 'e.g. jane@email.com',           type: 'email' },
+  { key: 'from',       label: 'Flying From',            placeholder: 'e.g. London, UK',               type: 'text' },
+  { key: 'to',         label: 'Destination',            placeholder: 'e.g. Bali, Indonesia',          type: 'text' },
+  { key: 'depart',     label: 'Departure Date',         placeholder: 'e.g. 15 July 2025',             type: 'text' },
+  { key: 'returnDate', label: 'Return Date',            placeholder: 'e.g. 29 July 2025',             type: 'text' },
+  { key: 'travelers',  label: 'Travelers',              placeholder: 'e.g. 2 adults, 1 child',        type: 'text' },
+  { key: 'budget',     label: 'Budget Range',           placeholder: 'e.g. $3,000–$5,000',           type: 'text' },
+  { key: 'accomm',     label: 'Accommodation Type',     placeholder: 'e.g. Luxury hotel',             type: 'text' },
+  { key: 'loyalty',    label: 'Loyalty Programs',       placeholder: 'e.g. Marriott Bonvoy (optional)', type: 'text' },
+  { key: 'prefs',      label: 'Travel Preferences',     placeholder: 'e.g. Beaches, culture, food',   type: 'text' },
+  { key: 'visa',       label: 'Visa / Passport Notes',  placeholder: 'e.g. US passport, no restrictions', type: 'text' },
+  { key: 'special',    label: 'Special Requirements',   placeholder: 'e.g. Vegetarian, wheelchair (optional)', type: 'text' }
+];
+
+const MENU_OPTIONS = [
+  { icon: '🗺️', label: 'Destination Finder',   key: 'destination' },
+  { icon: '📋', label: 'Itinerary Planner',     key: 'itinerary' },
+  { icon: '✈️', label: 'Flight & Stay Finder',  key: 'flights' },
+  { icon: '🎒', label: 'Packing List',          key: 'packing' },
+  { icon: '💬', label: 'Language & Phrases',    key: 'language' },
+  { icon: '💎', label: 'Hidden Gems Guide',     key: 'gems' },
+  { icon: '💰', label: 'Travel Budget Planner', key: 'budget' },
+  { icon: '🔍', label: 'Advanced Flight Scout', key: 'scout' }
+];
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function now() {
+  return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+}
+function scrollBottom() {
+  const msgs = document.getElementById('msgs');
+  requestAnimationFrame(() => msgs.scrollTop = msgs.scrollHeight);
+}
+function genRef() {
+  return 'KNV-' + Math.random().toString(36).toUpperCase().slice(2, 8);
+}
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function setSendBtnDisabled(v) {
+  document.getElementById('send-btn').disabled = v;
+}
+const AI_AVATAR = `<div class="msg-avatar ai"><svg viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg></div>`;
+
+// ─── RENDER HELPERS ───────────────────────────────────────────────────────────
+function aiMsg(html) {
+  const msgs = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = 'msg ai';
+  d.innerHTML = `${AI_AVATAR}<div class="msg-body"><div class="msg-bubble">${html}</div><div class="msg-time">${now()}</div></div>`;
+  msgs.appendChild(d);
+  scrollBottom();
+  return d;
+}
+
+function userMsg(text) {
+  const msgs = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = 'msg user';
+  d.innerHTML = `<div class="msg-avatar user">👤</div><div class="msg-body"><div class="msg-bubble">${escHtml(text)}</div><div class="msg-time">${now()}</div></div>`;
+  msgs.appendChild(d);
+  scrollBottom();
+}
+
+function showTyping() {
+  const msgs = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = 'typing'; d.id = 'typing-indicator';
+  d.innerHTML = `${AI_AVATAR}<div class="typing-bubble"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(d);
+  scrollBottom();
+}
+function hideTyping() {
+  document.getElementById('typing-indicator')?.remove();
+}
+
+// ─── STREAM BUBBLE HELPERS ────────────────────────────────────────────────────
+function renderBubbleText(text) {
+  return escHtml(text)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+}
+
+function createStreamBubble() {
+  const id = 'sb-' + Date.now();
+  const msgs = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = 'msg ai';
+  d.innerHTML = `${AI_AVATAR}<div class="msg-body"><div class="msg-bubble" id="${id}"><span class="cursor-blink">▋</span></div></div>`;
+  msgs.appendChild(d);
+  scrollBottom();
+  return id;
+}
+
+function updateStreamBubble(id, text) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = renderBubbleText(text) + '<span class="cursor-blink">▋</span>';
+  scrollBottom();
+}
+
+function finalizeStreamBubble(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const text = STATE.streamAccum;
+  if (!text.trim()) { el.closest('.msg')?.remove(); return; }
+  el.innerHTML = renderBubbleText(text);
+  const body = el.closest('.msg-body');
+  if (body && !body.querySelector('.msg-time')) {
+    const t = document.createElement('div');
+    t.className = 'msg-time'; t.textContent = now();
+    body.appendChild(t);
+  }
+  scrollBottom();
+}
+
+function removeStreamBubble(id) {
+  if (id) document.getElementById(id)?.closest('.msg')?.remove();
+}
+
+// ─── API KEY MODAL ────────────────────────────────────────────────────────────
+function showApiKeyModal() {
+  const modal = document.getElementById('api-modal');
+  modal.classList.remove('hidden');
+  const inp = document.getElementById('api-key-input');
+  if (STATE.apiKey) inp.value = STATE.apiKey;
+  inp.focus();
+  document.getElementById('api-key-error').textContent = '';
+}
+
+function hideApiKeyModal() {
+  document.getElementById('api-modal').classList.add('hidden');
+}
+
+function saveApiKey() {
+  const val = document.getElementById('api-key-input').value.trim();
+  const errEl = document.getElementById('api-key-error');
+  if (!val.startsWith('sk-ant-')) {
+    errEl.textContent = 'Key must start with sk-ant-…';
+    return;
+  }
+  STATE.apiKey = val;
+  localStorage.setItem('kanieva_api_key', val);
+  errEl.textContent = '';
+  hideApiKeyModal();
+  if (STATE.stage === 'welcome' && document.getElementById('msgs').children.length === 0) {
+    showWelcome();
+  }
+}
+
+// Close modal on backdrop click
+document.getElementById('api-modal').addEventListener('click', function(e) {
+  if (e.target === this && STATE.apiKey) hideApiKeyModal();
+});
+
+// Enter key in api input
+document.getElementById('api-key-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') saveApiKey();
+});
+
+// ─── CORE: STREAM CLAUDE ──────────────────────────────────────────────────────
+async function streamClaude({ forceTool = false } = {}) {
+  if (!STATE.apiKey) { showApiKeyModal(); return null; }
+  if (STATE.isStreaming) return null;
+
+  STATE.isStreaming = true;
+  STATE.streamAccum = '';
+  setSendBtnDisabled(true);
+
+  let streamId = null;
+  if (forceTool) {
+    showTyping();
+  } else {
+    streamId = createStreamBubble();
+    STATE.streamBubbleId = streamId;
+  }
+
+  const reqBody = {
+    model: MODEL,
+    max_tokens: forceTool ? 2048 : 1024,
+    system: [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
+    stream: true,
+    messages: STATE.messages
+  };
+
+  if (forceTool) {
+    reqBody.tools = [PACKAGE_TOOL];
+    reqBody.tool_choice = { type: 'tool', name: 'generate_travel_packages' };
+  }
+
+  try {
+    const resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': STATE.apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify(reqBody)
+    });
+
+    if (!resp.ok) {
+      const errBody = await resp.json().catch(() => ({}));
+      if (forceTool) hideTyping(); else removeStreamBubble(streamId);
+      STATE.isStreaming = false;
+      setSendBtnDisabled(false);
+
+      if (resp.status === 401) {
+        STATE.apiKey = '';
+        localStorage.removeItem('kanieva_api_key');
+        aiMsg(`🔑 Invalid API key. Please enter a valid Anthropic key.`);
+        setTimeout(showApiKeyModal, 800);
+      } else if (resp.status === 429) {
+        aiMsg(`⏱️ Rate limit reached. Please wait a moment and try again.`);
+      } else {
+        const msg = errBody.error?.message || `API error (${resp.status})`;
+        aiMsg(`⚠️ ${escHtml(msg)}`);
+      }
+      return null;
+    }
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '';
+    let currentBlock = null;
+    let textAccum = '';
+    let jsonAccum = '';
+    const assistantContent = [];
+    const toolUseBlocks = [];
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      const lines = buf.split('\n');
+      buf = lines.pop() || '';
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const raw = line.slice(6).trim();
+        if (!raw || raw === '[DONE]') continue;
+        let ev;
+        try { ev = JSON.parse(raw); } catch { continue; }
+
+        if (ev.type === 'content_block_start') {
+          currentBlock = ev.content_block;
+          textAccum = '';
+          jsonAccum = '';
+        } else if (ev.type === 'content_block_delta' && currentBlock) {
+          if (ev.delta.type === 'text_delta' && currentBlock.type === 'text') {
+            textAccum += ev.delta.text;
+            STATE.streamAccum = textAccum;
+            if (streamId) updateStreamBubble(streamId, textAccum);
+          } else if (ev.delta.type === 'input_json_delta') {
+            jsonAccum += ev.delta.partial_json;
+          }
+        } else if (ev.type === 'content_block_stop' && currentBlock) {
+          if (currentBlock.type === 'text' && textAccum) {
+            assistantContent.push({ type: 'text', text: textAccum });
+          } else if (currentBlock.type === 'tool_use') {
+            let input = {};
+            try { input = JSON.parse(jsonAccum); } catch {}
+            const tu = { type: 'tool_use', id: currentBlock.id, name: currentBlock.name, input };
+            assistantContent.push(tu);
+            toolUseBlocks.push(tu);
+          }
+          currentBlock = null;
+        }
+      }
+    }
+
+    if (forceTool) hideTyping(); else finalizeStreamBubble(streamId);
+
+    if (assistantContent.length > 0) {
+      STATE.messages.push({ role: 'assistant', content: assistantContent });
+    }
+
+    for (const tu of toolUseBlocks) {
+      if (tu.name === 'generate_travel_packages') {
+        await handlePackageTool(tu);
+      }
+    }
+
+    STATE.isStreaming = false;
+    setSendBtnDisabled(false);
+    return { toolUseBlocks };
+
+  } catch (err) {
+    if (forceTool) hideTyping(); else removeStreamBubble(streamId);
+    aiMsg(`⚠️ Connection error. Please check your network and try again.`);
+    STATE.isStreaming = false;
+    setSendBtnDisabled(false);
+    return null;
+  }
+}
+
+// ─── PACKAGE TOOL HANDLER ─────────────────────────────────────────────────────
+async function handlePackageTool(toolUse) {
+  STATE.messages.push({
+    role: 'user',
+    content: [{ type: 'tool_result', tool_use_id: toolUse.id, content: 'Packages displayed successfully.' }]
+  });
+  renderDynamicPackages(toolUse.input);
+}
+
+function renderDynamicPackages(data) {
+  const { intro, packages } = data;
+  if (!packages || !packages.length) return;
+
+  const msgs = document.getElementById('msgs');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ai';
+
+  const body = document.createElement('div');
+  body.className = 'msg-body';
+  body.style.maxWidth = '100%';
+
+  if (intro) {
+    const introEl = document.createElement('div');
+    introEl.className = 'msg-bubble';
+    introEl.innerHTML = renderBubbleText(intro);
+    body.appendChild(introEl);
+  }
+
+  const cards = document.createElement('div');
+  cards.className = 'pkg-cards';
+
+  packages.forEach(pkg => {
+    const card = document.createElement('div');
+    card.className = `pkg-card ${pkg.styleClass || ''}`;
+    card.innerHTML = `
+      <div class="pkg-badge">${escHtml(pkg.badge)}</div>
+      <div class="pkg-name">${escHtml(pkg.name)}</div>
+      <div class="pkg-desc">${escHtml(pkg.description)}</div>
+      <ul class="pkg-features">${(pkg.features||[]).map(f=>`<li>${escHtml(f)}</li>`).join('')}</ul>
+      <div class="pkg-footer">
+        <div class="pkg-price">${escHtml(pkg.price)}<span>${escHtml(pkg.per)}</span></div>
+        <button class="pkg-select-btn">Select →</button>
+      </div>`;
+    card.onclick = () => selectPackage(pkg);
+    cards.appendChild(card);
+  });
+
+  body.appendChild(cards);
+
+  const timeEl = document.createElement('div');
+  timeEl.className = 'msg-time'; timeEl.textContent = now();
+  body.appendChild(timeEl);
+
+  wrap.innerHTML = AI_AVATAR;
+  wrap.appendChild(body);
+  msgs.appendChild(wrap);
+  scrollBottom();
+
+  STATE.stage = 'packages';
+}
+
+// ─── WELCOME ──────────────────────────────────────────────────────────────────
+async function showWelcome() {
+  await delay(400);
+  aiMsg(`<strong>Welcome to Kanieva AI! 🌍✈️</strong><br><br>I'm your personal AI travel concierge — I plan, personalise, and help book your perfect trip, entirely through chat.<br><br>What would you like to do today?`);
+  await delay(400);
+
+  const msgs = document.getElementById('msgs');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ai';
+  const body = document.createElement('div');
+  body.className = 'msg-body';
+
+  const grid = document.createElement('div');
+  grid.className = 'option-grid';
+  MENU_OPTIONS.forEach(opt => {
+    const chip = document.createElement('div');
+    chip.className = 'opt-chip';
+    chip.innerHTML = `<span class="chip-icon">${opt.icon}</span>${opt.label}`;
+    chip.onclick = () => handleMenuOption(opt);
+    grid.appendChild(chip);
+  });
+  body.appendChild(grid);
+
+  const qr = document.createElement('div');
+  qr.className = 'quick-replies';
+  qr.innerHTML = `<div class="qr" onclick="startBooking()">📝 Plan a Trip</div>`;
+  body.appendChild(qr);
+
+  wrap.innerHTML = AI_AVATAR;
+  wrap.appendChild(body);
+  msgs.appendChild(wrap);
+  scrollBottom();
+  STATE.stage = 'menu';
+}
+
+// ─── MENU HANDLERS ────────────────────────────────────────────────────────────
+async function handleMenuOption(opt) {
+  userMsg(opt.icon + ' ' + opt.label);
+
+  if (opt.key === 'itinerary') {
+    await startBooking();
+    return;
+  }
+
+  STATE.messages.push({ role: 'user', content: `I'd like help with: ${opt.label}` });
+  STATE.stage = 'freetext';
+  await streamClaude();
+}
+
+// ─── BOOKING FORM ─────────────────────────────────────────────────────────────
+async function startBooking() {
+  STATE.stage = 'form';
+  STATE.formData = {};
+  showTyping();
+  await delay(600);
+  hideTyping();
+  aiMsg(`Let's plan your perfect trip! 🌟 Fill in the details below and I'll generate personalised packages for you.`);
+  renderBookingForm();
+}
+
+function renderBookingForm() {
+  const msgs = document.getElementById('msgs');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ai';
+
+  const body = document.createElement('div');
+  body.className = 'msg-body';
+  body.style.maxWidth = '100%';
+
+  const card = document.createElement('div');
+  card.className = 'form-card';
+  card.innerHTML = `<div class="form-card-title">✈️ Trip Details</div>
+    <div class="prog-label">Fill in your details to get started</div>
+    <div class="prog-track"><div class="prog-fill" id="form-prog" style="width:0%"></div></div>`;
+
+  const pairs = [['name','email'],['from','to'],['depart','returnDate'],['travelers','budget'],['accomm','loyalty'],['prefs','visa'],['special']];
+  pairs.forEach(pair => {
+    if (pair.length === 2) {
+      const row = document.createElement('div');
+      row.className = 'form-row';
+      pair.forEach(k => row.appendChild(makeField(k)));
+      card.appendChild(row);
+    } else {
+      card.appendChild(makeField(pair[0]));
+    }
+  });
+
+  const btn = document.createElement('button');
+  btn.className = 'form-submit'; btn.id = 'form-submit-btn';
+  btn.textContent = '🚀 Find My Trip Packages';
+  btn.onclick = submitBookingForm;
+  card.appendChild(btn);
+
+  body.appendChild(card);
+  wrap.innerHTML = AI_AVATAR;
+  wrap.appendChild(body);
+  msgs.appendChild(wrap);
+  scrollBottom();
+
+  document.querySelectorAll('.form-fi').forEach(inp => inp.addEventListener('input', updateFormProgress));
+}
+
+function makeField(key) {
+  const f = FORM_FIELDS.find(x => x.key === key);
+  const wrap = document.createElement('div');
+  wrap.className = 'form-field';
+  wrap.innerHTML = `<label class="form-label">${f.label}</label><input class="form-input form-fi" type="${f.type}" placeholder="${f.placeholder}" data-key="${key}">`;
+  return wrap;
+}
+
+function updateFormProgress() {
+  const inputs = document.querySelectorAll('.form-fi');
+  const filled = [...inputs].filter(i => i.value.trim()).length;
+  const bar = document.getElementById('form-prog');
+  if (bar) bar.style.width = Math.round((filled / inputs.length) * 100) + '%';
+}
+
+async function submitBookingForm() {
+  const inputs = document.querySelectorAll('.form-fi');
+  const required = ['name','email','from','to','depart','travelers'];
+  inputs.forEach(inp => { STATE.formData[inp.dataset.key] = inp.value.trim(); });
+
+  const missing = required.filter(k => !STATE.formData[k]).map(k => FORM_FIELDS.find(f=>f.key===k).label);
+  if (missing.length) {
+    aiMsg(`Please fill in: <strong>${missing.join(', ')}</strong> to continue. 🙏`);
+    return;
+  }
+
+  const btn = document.getElementById('form-submit-btn');
+  if (btn) btn.disabled = true;
+
+  const fd = STATE.formData;
+  userMsg('I\'ve filled in my trip details');
+
+  aiMsg(`
+    <strong>Perfect!</strong> Here's your trip summary:<br><br>
+    👤 <strong>${escHtml(fd.name)}</strong> (${escHtml(fd.email)})<br>
+    ✈️ <strong>${escHtml(fd.from)}</strong> → <strong>${escHtml(fd.to)}</strong><br>
+    📅 ${escHtml(fd.depart)}${fd.returnDate ? ' → ' + escHtml(fd.returnDate) : ''}<br>
+    👥 ${escHtml(fd.travelers)}<br>
+    💰 ${escHtml(fd.budget||'Flexible budget')}<br>
+    🏨 ${escHtml(fd.accomm||'Any accommodation')}<br>
+    ${fd.prefs ? '❤️ ' + escHtml(fd.prefs) + '<br>' : ''}
+    ${fd.special ? '⭐ ' + escHtml(fd.special) + '<br>' : ''}
+    <br>Finding your best packages… 🔍
+  `);
+
+  const parts = [
+    `Please generate travel packages for my trip:`,
+    `- From: ${fd.from}`, `- To: ${fd.to}`, `- Departure: ${fd.depart}`,
+    fd.returnDate ? `- Return: ${fd.returnDate}` : null,
+    `- Travelers: ${fd.travelers}`,
+    fd.budget ? `- Budget: ${fd.budget}` : null,
+    fd.accomm ? `- Accommodation: ${fd.accomm}` : null,
+    fd.prefs ? `- Preferences: ${fd.prefs}` : null,
+    fd.loyalty ? `- Loyalty programs: ${fd.loyalty}` : null,
+    fd.visa ? `- Visa/passport: ${fd.visa}` : null,
+    fd.special ? `- Special requirements: ${fd.special}` : null
+  ].filter(Boolean);
+
+  STATE.messages.push({ role: 'user', content: parts.join('\n') });
+  await streamClaude({ forceTool: true });
+}
+
+// ─── PAYMENT ──────────────────────────────────────────────────────────────────
+async function selectPackage(pkg) {
+  STATE.selectedPackage = pkg;
+  STATE.stage = 'payment';
+
+  userMsg(`I'd like the ${pkg.name} — ${pkg.price}`);
+  showTyping();
+  await delay(700);
+  hideTyping();
+  aiMsg(`Excellent choice! 🎉 The <strong>${escHtml(pkg.name)}</strong> is a fantastic option. Here's your payment summary — secure checkout via Revolut:`);
+  await delay(300);
+  renderPayment(pkg);
+}
+
+function renderPayment(pkg) {
+  const fd = STATE.formData;
+  const msgs = document.getElementById('msgs');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ai';
+
+  const body = document.createElement('div');
+  body.className = 'msg-body';
+  body.style.maxWidth = '100%';
+
+  const priceNum = parseFloat((pkg.price||'0').replace(/[^0-9.]/g,'')) || 0;
+  const numPax = parseInt(((fd.travelers||'1').match(/\d+/)||['1'])[0]) || 1;
+  const subtotal = priceNum * numPax;
+  const fees = Math.round(subtotal * 0.025);
+  const total = subtotal + fees;
+
+  const card = document.createElement('div');
+  card.className = 'pay-card';
+  card.innerHTML = `
+    <div class="pay-title">💳 Booking Summary</div>
+    <div class="pay-sub">${escHtml(pkg.name)} · ${escHtml(fd.from||'')} → ${escHtml(fd.to||'')}</div>
+    <div class="pay-amount">$${total.toLocaleString()}</div>
+    <div class="pay-breakdown">
+      <div class="pay-row"><span class="label">Package (${numPax}× ${escHtml(pkg.price)})</span><span class="val">$${subtotal.toLocaleString()}</span></div>
+      <div class="pay-row"><span class="label">Booking fee (2.5%)</span><span class="val">$${fees.toLocaleString()}</span></div>
+      <div class="pay-row"><span class="label"><strong>Total</strong></span><span class="val"><strong>$${total.toLocaleString()}</strong></span></div>
+    </div>
+    <button class="pay-revolut-btn" onclick="openRevolut()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M13.5 2C8.25 2 4 6.25 4 11.5S8.25 21 13.5 21c2.7 0 5.14-1.08 6.92-2.83L18 16.5A7.45 7.45 0 0 1 13.5 18.5 7 7 0 0 1 6.5 11.5 7 7 0 0 1 13.5 4.5c1.85 0 3.53.72 4.78 1.88L20 4.6A9.47 9.47 0 0 0 13.5 2z"/><path d="M20 8h-6v2h4v4h-4v2h6V8z"/></svg>
+      Pay with Revolut
+    </button>
+    <button class="pay-confirm-btn" onclick="confirmPayment()">✓ I've Completed Payment</button>`;
+
+  body.appendChild(card);
+
+  const note = document.createElement('div');
+  note.className = 'msg-bubble';
+  note.style.cssText = 'margin-top:8px;font-size:12px;color:var(--tx2)';
+  note.innerHTML = `🔒 Secure payment via Revolut. After paying, tap <strong>"I've Completed Payment"</strong> to receive your booking confirmation.`;
+  body.appendChild(note);
+
+  wrap.innerHTML = AI_AVATAR;
+  wrap.appendChild(body);
+  msgs.appendChild(wrap);
+  scrollBottom();
+}
+
+function openRevolut() {
+  window.open('https://revolut.me/kanieva', '_blank');
+}
+
+async function confirmPayment() {
+  STATE.stage = 'confirmed';
+  STATE.bookingRef = genRef();
+  userMsg('I\'ve completed the payment ✓');
+  showTyping();
+  await delay(700);
+  hideTyping();
+  aiMsg(`🎊 <strong>Booking Confirmed!</strong> Welcome to your adventure — everything is taken care of.`);
+  await delay(400);
+  renderConfirmation();
+}
+
+// ─── CONFIRMATION ─────────────────────────────────────────────────────────────
+async function renderConfirmation() {
+  const fd = STATE.formData;
+  const pkg = STATE.selectedPackage;
+  const msgs = document.getElementById('msgs');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ai';
+
+  const body = document.createElement('div');
+  body.className = 'msg-body';
+  body.style.maxWidth = '100%';
+
+  const card = document.createElement('div');
+  card.className = 'confirm-card';
+  card.innerHTML = `
+    <div class="confirm-icon">✈️</div>
+    <div class="confirm-title">You're All Set!</div>
+    <div class="confirm-sub">Your trip has been booked successfully. A confirmation will be sent to <strong>${escHtml(fd.email||'your email')}</strong>.</div>
+    <div class="confirm-ref">${STATE.bookingRef}</div>
+    <div class="confirm-details">
+      <div class="confirm-row"><span class="lbl">Traveller</span><span class="val">${escHtml(fd.name||'-')}</span></div>
+      <div class="confirm-row"><span class="lbl">Route</span><span class="val">${escHtml(fd.from||'-')} → ${escHtml(fd.to||'-')}</span></div>
+      <div class="confirm-row"><span class="lbl">Dates</span><span class="val">${escHtml(fd.depart||'-')}${fd.returnDate?' → '+escHtml(fd.returnDate):''}</span></div>
+      <div class="confirm-row"><span class="lbl">Package</span><span class="val">${escHtml(pkg?.name||'-')}</span></div>
+      <div class="confirm-row"><span class="lbl">Travelers</span><span class="val">${escHtml(fd.travelers||'-')}</span></div>
+      <div class="confirm-row"><span class="lbl">Status</span><span class="val" style="color:var(--teal)">✓ Confirmed</span></div>
+    </div>`;
+  body.appendChild(card);
+
+  wrap.innerHTML = AI_AVATAR;
+  wrap.appendChild(body);
+  msgs.appendChild(wrap);
+  scrollBottom();
+
+  await delay(800);
+
+  // Add confirmation context to conversation history for follow-up questions
+  STATE.messages.push({
+    role: 'user',
+    content: `My booking is confirmed. Reference: ${STATE.bookingRef}. I'm going to ${fd.to} from ${fd.depart}${fd.returnDate ? ' to ' + fd.returnDate : ''}.`
+  });
+  STATE.messages.push({
+    role: 'assistant',
+    content: [{ type: 'text', text: `Your trip to ${fd.to} is confirmed! Your itinerary, hotel vouchers, and flight details will be sent to ${fd.email} within 24 hours. I'm here if you have any questions about your destination!` }]
+  });
+
+  aiMsg(`Your full itinerary, hotel vouchers, and flight details will be sent to <strong>${escHtml(fd.email||'your email')}</strong> within 24 hours. 📧<br><br>Is there anything else I can help you with? Ask me about Hidden Gems, Packing Tips, or anything about ${escHtml(fd.to||'your destination')}! 🌍`);
+
+  await delay(400);
+  const qrWrap = document.createElement('div');
+  qrWrap.className = 'msg ai';
+  qrWrap.innerHTML = `${AI_AVATAR}<div class="msg-body"><div class="quick-replies">
+    <div class="qr" onclick="handleMenuOption(MENU_OPTIONS[5])">💎 Hidden Gems</div>
+    <div class="qr" onclick="handleMenuOption(MENU_OPTIONS[3])">🎒 Packing List</div>
+    <div class="qr" onclick="handleMenuOption(MENU_OPTIONS[4])">💬 Language Guide</div>
+  </div></div>`;
+  msgs.appendChild(qrWrap);
+  scrollBottom();
+}
+
+// ─── FREE TEXT ────────────────────────────────────────────────────────────────
+async function handleFreeText(text) {
+  if (STATE.stage === 'form') {
+    aiMsg(`Please fill in the booking form above and tap <strong>"Find My Trip Packages"</strong> when ready! 📋`);
+    return;
+  }
+  if (STATE.stage === 'payment') {
+    aiMsg(`To complete your booking, tap <strong>"Pay with Revolut"</strong> above, then confirm. Need help? Let me know! 💳`);
+    return;
+  }
+
+  STATE.messages.push({ role: 'user', content: text });
+  STATE.stage = 'freetext';
+  await streamClaude();
+}
+
+// ─── INPUT ────────────────────────────────────────────────────────────────────
+async function sendMessage() {
+  const input = document.getElementById('user-input');
+  const text = input.value.trim();
+  if (!text || STATE.isStreaming) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+  userMsg(text);
+  await handleFreeText(text);
+}
+
+document.getElementById('user-input').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
+
+document.getElementById('user-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+
+// ─── RESET ────────────────────────────────────────────────────────────────────
+function resetChat() {
+  Object.assign(STATE, {
+    stage: 'welcome', formData: {}, selectedPackage: null,
+    bookingRef: null, messages: [], isStreaming: false, streamAccum: ''
+  });
+  setSendBtnDisabled(false);
+  document.getElementById('msgs').innerHTML = '';
+  showWelcome();
+}
+
+// ─── BOOT ─────────────────────────────────────────────────────────────────────
+window.addEventListener('load', async () => {
+  await delay(2000);
+  document.getElementById('splash').classList.add('hide');
+  await delay(600);
+  document.getElementById('splash').style.display = 'none';
+  document.getElementById('app').classList.add('show');
+  showWelcome();
+  if (!STATE.apiKey) {
+    await delay(800);
+    showApiKeyModal();
+  }
+});
+</script>
+</body>
+</html>
